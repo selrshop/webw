@@ -257,13 +257,22 @@ const ProductsPageEnhanced = () => {
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="text-lg font-heading font-semibold">{product.name}</h3>
-                    {product.discount_percentage > 0 && (
-                      <span className="text-xs bg-accent text-white px-2 py-1 rounded-full">
-                        {product.discount_percentage}% OFF
-                      </span>
-                    )}
+                    <div className="flex items-center gap-2">
+                      {product.is_veg !== null && product.is_veg !== undefined && (
+                        <span className={`w-5 h-5 border-2 flex items-center justify-center rounded-sm text-xs ${
+                          product.is_veg ? 'border-green-600' : 'border-red-600'
+                        }`}>
+                          <span className={`w-2.5 h-2.5 rounded-full ${product.is_veg ? 'bg-green-600' : 'bg-red-600'}`}></span>
+                        </span>
+                      )}
+                      {product.discount_percentage > 0 && (
+                        <span className="text-xs bg-accent text-white px-2 py-1 rounded-full">
+                          {product.discount_percentage}% OFF
+                        </span>
+                      )}
+                    </div>
                   </div>
-                  <p className="text-sm text-muted-foreground mb-3">{product.description}</p>
+                  <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{product.description}</p>
                   <div className="mb-3">
                     {(product.mrp || product.price) > (product.sale_price || product.price) && (
                       <span className="text-sm text-muted-foreground line-through mr-2">
@@ -274,6 +283,22 @@ const ProductsPageEnhanced = () => {
                       {'\u20B9'}{product.sale_price || product.price}
                     </span>
                   </div>
+                  {/* Sizes */}
+                  {product.sizes && product.sizes.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mb-2">
+                      {product.sizes.map(size => (
+                        <span key={size} className="text-xs bg-gray-100 px-2 py-0.5 rounded">{size}</span>
+                      ))}
+                    </div>
+                  )}
+                  {/* Colors */}
+                  {product.colors && product.colors.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mb-2">
+                      {product.colors.map(color => (
+                        <span key={color} className="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded">{color}</span>
+                      ))}
+                    </div>
+                  )}
                   {product.category && (
                     <span className="inline-block text-xs bg-muted px-2 py-1 rounded-full mb-3">{product.category}</span>
                   )}
