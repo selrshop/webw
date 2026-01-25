@@ -237,6 +237,171 @@ const BusinessSettings = () => {
             </div>
           </div>
 
+          {/* Delivery & Charges */}
+          <div className="bg-white rounded-2xl shadow-sm border border-border/50 p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Truck className="w-5 h-5 text-primary" />
+              <h2 className="text-xl font-heading font-semibold">Delivery & Charges</h2>
+            </div>
+            <div className="space-y-4">
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="deliveryCharges">Delivery Charges (₹)</Label>
+                  <Input
+                    id="deliveryCharges"
+                    data-testid="delivery-charges-input"
+                    type="number"
+                    step="0.01"
+                    placeholder="0"
+                    value={business.delivery_charges || ''}
+                    onChange={(e) => setBusiness({...business, delivery_charges: e.target.value})}
+                    className="mt-2"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">Amount charged for delivery</p>
+                </div>
+                <div>
+                  <Label htmlFor="freeDeliveryMin">Free Delivery Above (₹)</Label>
+                  <Input
+                    id="freeDeliveryMin"
+                    data-testid="free-delivery-input"
+                    type="number"
+                    step="0.01"
+                    placeholder="Optional"
+                    value={business.min_order_for_free_delivery || ''}
+                    onChange={(e) => setBusiness({...business, min_order_for_free_delivery: e.target.value})}
+                    className="mt-2"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">Minimum order for free delivery</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Taxes */}
+          <div className="bg-white rounded-2xl shadow-sm border border-border/50 p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Receipt className="w-5 h-5 text-primary" />
+              <h2 className="text-xl font-heading font-semibold">Tax Settings</h2>
+            </div>
+            <div className="space-y-4">
+              <div className="max-w-xs">
+                <Label htmlFor="taxPercentage">Tax Percentage (%)</Label>
+                <Input
+                  id="taxPercentage"
+                  data-testid="tax-percentage-input"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  max="100"
+                  placeholder="0"
+                  value={business.tax_percentage || ''}
+                  onChange={(e) => setBusiness({...business, tax_percentage: e.target.value})}
+                  className="mt-2"
+                />
+                <p className="text-xs text-muted-foreground mt-1">GST or other applicable taxes</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Color Scheme */}
+          <div className="bg-white rounded-2xl shadow-sm border border-border/50 p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Palette className="w-5 h-5 text-primary" />
+              <h2 className="text-xl font-heading font-semibold">Website Color Scheme</h2>
+            </div>
+            <p className="text-sm text-muted-foreground mb-4">Choose a color theme for your customer-facing website</p>
+            
+            {/* Color Presets */}
+            <div className="grid grid-cols-4 md:grid-cols-8 gap-2 mb-6">
+              {COLOR_PRESETS.map((preset) => (
+                <button
+                  key={preset.name}
+                  type="button"
+                  onClick={() => applyColorPreset(preset)}
+                  className={`w-full aspect-square rounded-lg border-2 transition-all hover:scale-105 ${
+                    business.primary_color === preset.primary ? 'border-gray-900 ring-2 ring-offset-2 ring-gray-900' : 'border-transparent'
+                  }`}
+                  style={{ background: `linear-gradient(135deg, ${preset.primary} 0%, ${preset.secondary} 100%)` }}
+                  title={preset.name}
+                />
+              ))}
+            </div>
+            
+            {/* Custom Colors */}
+            <div className="space-y-4">
+              <p className="text-sm font-medium">Custom Colors</p>
+              <div className="grid md:grid-cols-3 gap-4">
+                <div>
+                  <Label htmlFor="primaryColor">Primary Color</Label>
+                  <div className="flex gap-2 mt-2">
+                    <input
+                      type="color"
+                      id="primaryColor"
+                      data-testid="primary-color-input"
+                      value={business.primary_color || '#2563eb'}
+                      onChange={(e) => setBusiness({...business, primary_color: e.target.value})}
+                      className="w-12 h-10 rounded cursor-pointer border border-border"
+                    />
+                    <Input
+                      value={business.primary_color || '#2563eb'}
+                      onChange={(e) => setBusiness({...business, primary_color: e.target.value})}
+                      placeholder="#2563eb"
+                      className="flex-1 font-mono text-sm"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="secondaryColor">Secondary Color</Label>
+                  <div className="flex gap-2 mt-2">
+                    <input
+                      type="color"
+                      id="secondaryColor"
+                      data-testid="secondary-color-input"
+                      value={business.secondary_color || '#3b82f6'}
+                      onChange={(e) => setBusiness({...business, secondary_color: e.target.value})}
+                      className="w-12 h-10 rounded cursor-pointer border border-border"
+                    />
+                    <Input
+                      value={business.secondary_color || '#3b82f6'}
+                      onChange={(e) => setBusiness({...business, secondary_color: e.target.value})}
+                      placeholder="#3b82f6"
+                      className="flex-1 font-mono text-sm"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="accentColor">Accent Color</Label>
+                  <div className="flex gap-2 mt-2">
+                    <input
+                      type="color"
+                      id="accentColor"
+                      data-testid="accent-color-input"
+                      value={business.accent_color || '#60a5fa'}
+                      onChange={(e) => setBusiness({...business, accent_color: e.target.value})}
+                      className="w-12 h-10 rounded cursor-pointer border border-border"
+                    />
+                    <Input
+                      value={business.accent_color || '#60a5fa'}
+                      onChange={(e) => setBusiness({...business, accent_color: e.target.value})}
+                      placeholder="#60a5fa"
+                      className="flex-1 font-mono text-sm"
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              {/* Preview */}
+              <div className="mt-4 p-4 rounded-lg border border-border">
+                <p className="text-sm text-muted-foreground mb-2">Preview</p>
+                <div className="flex items-center gap-3">
+                  <div className="h-8 flex-1 rounded" style={{ backgroundColor: business.primary_color || '#2563eb' }}></div>
+                  <div className="h-8 flex-1 rounded" style={{ backgroundColor: business.secondary_color || '#3b82f6' }}></div>
+                  <div className="h-8 flex-1 rounded" style={{ backgroundColor: business.accent_color || '#60a5fa' }}></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className="flex gap-4">
             <Button
               type="button"
