@@ -176,20 +176,30 @@ class Business(BaseModel):
     is_active: bool = True
 
 # Product Models
+class BulkPricing(BaseModel):
+    min_quantity: int
+    price_per_unit: float
+
 class ProductCreate(BaseModel):
     name: str
     description: str
-    price: float
+    mrp: float
+    sale_price: float
+    bulk_pricing: Optional[List[BulkPricing]] = []
     image_url: Optional[str] = None
     category: Optional[str] = None
+    product_type: Optional[str] = "general"  # food, clothing, grocery, service, etc.
     is_available: bool = True
 
 class ProductUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
-    price: Optional[float] = None
+    mrp: Optional[float] = None
+    sale_price: Optional[float] = None
+    bulk_pricing: Optional[List[BulkPricing]] = None
     image_url: Optional[str] = None
     category: Optional[str] = None
+    product_type: Optional[str] = None
     is_available: Optional[bool] = None
 
 class Product(BaseModel):
@@ -198,9 +208,13 @@ class Product(BaseModel):
     business_id: str
     name: str
     description: str
-    price: float
+    mrp: float
+    sale_price: float
+    discount_percentage: float = 0.0
+    bulk_pricing: List[BulkPricing] = []
     image_url: Optional[str] = None
     category: Optional[str] = None
+    product_type: str = "general"
     is_available: bool = True
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
