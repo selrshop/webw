@@ -391,4 +391,4 @@ const ProductsPageEnhanced = () => {
   );
 };
 
-export default ProductsPage;
+export default ProductsPageEnhanced;
