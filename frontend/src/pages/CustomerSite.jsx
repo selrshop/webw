@@ -78,8 +78,8 @@ const CustomerSite = () => {
     return <DoctorTemplate business={business} products={products} />;
   }
   
-  // All other service-based businesses use Universal Template
-  return <UniversalServiceTemplate business={business} products={products} />;
+  // All other service-based businesses use Restaurant Template as fallback for now
+  return <RestaurantTemplate business={business} products={products} />;
 };
 
 export default CustomerSite;
