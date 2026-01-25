@@ -194,11 +194,25 @@ const ProductsPageEnhanced = () => {
                   <img src={product.image_url} alt={product.name} className="w-full h-48 object-cover" />
                 )}
                 <div className="p-6">
-                  <div className="flex justify-between items-start mb-2">
+                  <div className="flex items-center justify-between mb-2">
                     <h3 className="text-lg font-heading font-semibold">{product.name}</h3>
-                    <span className="text-lg font-bold text-primary">₹{product.price}</span>
+                    {product.discount_percentage > 0 && (
+                      <span className="text-xs bg-accent text-white px-2 py-1 rounded-full">
+                        {product.discount_percentage}% OFF
+                      </span>
+                    )}
                   </div>
                   <p className="text-sm text-muted-foreground mb-3">{product.description}</p>
+                  <div className="mb-3">
+                    {(product.mrp || product.price) > (product.sale_price || product.price) && (
+                      <span className="text-sm text-muted-foreground line-through mr-2">
+                        MRP {'\u20B9'}{product.mrp || product.price}
+                      </span>
+                    )}
+                    <span className="text-xl font-bold text-primary">
+                      {'\u20B9'}{product.sale_price || product.price}
+                    </span>
+                  </div>
                   {product.category && (
                     <span className="inline-block text-xs bg-muted px-2 py-1 rounded-full mb-3">{product.category}</span>
                   )}
