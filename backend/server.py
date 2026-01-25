@@ -135,8 +135,11 @@ class BusinessCreate(BaseModel):
     whatsapp_api_enabled: bool = False
     whatsapp_api_key: Optional[str] = None
     delivery_charges: Optional[float] = 0.0
-    tax_percentage: Optional[float] = 0.0  # GST/Tax percentage
+    tax_percentage: Optional[float] = 0.0
     min_order_for_free_delivery: Optional[float] = None
+    primary_color: Optional[str] = "#2563eb"  # Default blue
+    secondary_color: Optional[str] = "#3b82f6"  # Lighter blue
+    accent_color: Optional[str] = "#60a5fa"  # Accent
 
 class BusinessUpdate(BaseModel):
     name: Optional[str] = None
@@ -159,6 +162,9 @@ class BusinessUpdate(BaseModel):
     delivery_charges: Optional[float] = None
     tax_percentage: Optional[float] = None
     min_order_for_free_delivery: Optional[float] = None
+    primary_color: Optional[str] = None
+    secondary_color: Optional[str] = None
+    accent_color: Optional[str] = None
 
 class Business(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -186,6 +192,9 @@ class Business(BaseModel):
     delivery_charges: float = 0.0
     tax_percentage: float = 0.0
     min_order_for_free_delivery: Optional[float] = None
+    primary_color: str = "#2563eb"
+    secondary_color: str = "#3b82f6"
+    accent_color: str = "#60a5fa"
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     is_active: bool = True
 
