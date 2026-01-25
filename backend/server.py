@@ -424,6 +424,16 @@ async def update_product(business_id: str, product_id: str, update_data: Product
         raise HTTPException(status_code=404, detail="Product not found")
     
     update_dict = {k: v for k, v in update_data.model_dump().items() if v is not None}
+    
+    # Recalculate discount if MRP or sale price changed
+    if 'mrp' in update_dict or 'sale_price' in update_dict:
+        mrp = update_dict.get('mrp', product.get('mrp', 0))
+        sale_price = update_dict.get('sale_price', product.get('sale_price', 0))
+        if mrp > 0 and sale_price < mrp:
+            update_dict['discount_percentage'] = round(((mrp - sale_price) / mrp) * 100, 2)
+        else:
+            update_dict['discount_percentage'] = 0.0
+    
     if update_dict:
         await db.products.update_one({"id": product_id}, {"$set": update_dict})
     
