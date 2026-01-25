@@ -40,6 +40,16 @@ function App() {
               <Dashboard />
             </ProtectedRoute>
           } />
+          <Route path="/admin" element={
+            <ProtectedRoute>
+              <SuperAdminDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/reseller" element={
+            <ProtectedRoute>
+              <ResellerDashboard />
+            </ProtectedRoute>
+          } />
           <Route path="/business/setup" element={
             <ProtectedRoute>
               <BusinessSetup />
