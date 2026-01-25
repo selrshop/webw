@@ -43,7 +43,7 @@ const UniversalServiceTemplate = ({ business, products }) => {
     e.preventDefault();
     const message = `Enquiry from ${enquiryData.customer_name}\\n\\nPhone: ${enquiryData.customer_phone}\\nEmail: ${enquiryData.customer_email}\\nMessage: ${enquiryData.notes}`;
     openWhatsApp(business.whatsapp_number, message);
-    toast.success('Enquiry sent! We\\'ll get back to you soon.');
+    toast.success('Enquiry sent! We will get back to you soon.');
     setShowEnquiry(false);
   };
 
