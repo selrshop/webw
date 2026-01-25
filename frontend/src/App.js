@@ -12,6 +12,8 @@ import ProductsPageEnhanced from "@/pages/ProductsPageEnhanced";
 import BookingsPage from "@/pages/BookingsPage";
 import OrdersPage from "@/pages/OrdersPage";
 import CustomerSite from "@/pages/CustomerSite";
+import SuperAdminDashboard from "@/pages/SuperAdminDashboard";
+import ResellerDashboard from "@/pages/ResellerDashboard";
 
 // Utils
 import { getToken } from "@/utils/auth";
