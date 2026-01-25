@@ -389,7 +389,16 @@ async def create_product(business_id: str, product_data: ProductCreate, current_
     if not business:
         raise HTTPException(status_code=404, detail="Business not found")
     
-    product = Product(business_id=business_id, **product_data.model_dump())
+    # Calculate discount percentage
+    discount_pct = 0.0
+    if product_data.mrp > 0 and product_data.sale_price < product_data.mrp:
+        discount_pct = round(((product_data.mrp - product_data.sale_price) / product_data.mrp) * 100, 2)
+    
+    product = Product(
+        business_id=business_id, 
+        discount_percentage=discount_pct,
+        **product_data.model_dump()
+    )
     product_dict = product.model_dump()
     product_dict['created_at'] = product_dict['created_at'].isoformat()
     
