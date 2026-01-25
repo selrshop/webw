@@ -118,5 +118,133 @@ BUSINESS_TEMPLATES = [
         "icon": "car",
         "features": ["Vehicle Fleet", "Pricing Plans", "Booking System", "Driver Details"],
         "color_scheme": "drive"
+    },
+    {
+        "id": "consultant",
+        "name": "Individual Consultant",
+        "description": "For business, IT, marketing consultants",
+        "icon": "user-tie",
+        "features": ["About", "Services", "Case Studies", "Consultation Booking"],
+        "color_scheme": "corporate"
+    },
+    {
+        "id": "ca",
+        "name": "Chartered Accountant",
+        "description": "For CA firms and accounting services",
+        "icon": "calculator",
+        "features": ["Services", "Tax Filing", "Audit Services", "Client Portal"],
+        "color_scheme": "finance"
+    },
+    {
+        "id": "tax_consultant",
+        "name": "Tax Consultant / GST",
+        "description": "For tax consultants and GST practitioners",
+        "icon": "file-text",
+        "features": ["Tax Services", "GST Filing", "Compliance", "Query Form"],
+        "color_scheme": "professional"
+    },
+    {
+        "id": "lawyer",
+        "name": "Lawyer / Legal Advisor",
+        "description": "For lawyers and legal consultants",
+        "icon": "scale",
+        "features": ["Practice Areas", "Case Experience", "Consultation", "Legal Documents"],
+        "color_scheme": "legal"
+    },
+    {
+        "id": "financial_advisor",
+        "name": "Financial Advisor",
+        "description": "For financial planning and investment advisors",
+        "icon": "trending-up",
+        "features": ["Services", "Investment Plans", "Portfolio Review", "Consultation"],
+        "color_scheme": "wealth"
+    },
+    {
+        "id": "insurance_agent",
+        "name": "Insurance Agent",
+        "description": "For insurance agents and brokers",
+        "icon": "shield",
+        "features": ["Policy Types", "Premium Calculator", "Claims Support", "Quote Request"],
+        "color_scheme": "secure"
+    },
+    {
+        "id": "loan_agent",
+        "name": "Loan Agent / DSA",
+        "description": "For loan agents and DSAs",
+        "icon": "bank",
+        "features": ["Loan Types", "EMI Calculator", "Eligibility Check", "Apply Now"],
+        "color_scheme": "banking"
+    },
+    {
+        "id": "realestate_broker",
+        "name": "Real Estate Broker",
+        "description": "For property consultants and brokers",
+        "icon": "map-pin",
+        "features": ["Property Listings", "Buy/Rent/Sell", "Site Visits", "Documentation"],
+        "color_scheme": "property"
+    },
+    {
+        "id": "yoga_trainer",
+        "name": "Yoga / Personal Trainer",
+        "description": "For yoga instructors and fitness trainers",
+        "icon": "dumbbell",
+        "features": ["Classes", "Programs", "Schedule", "Online Sessions"],
+        "color_scheme": "wellness"
+    },
+    {
+        "id": "coaching",
+        "name": "Coaching Institute",
+        "description": "For coaching classes and tutors",
+        "icon": "graduation-cap",
+        "features": ["Courses", "Batch Timings", "Results", "Admission Form"],
+        "color_scheme": "education"
+    },
+    {
+        "id": "photographer",
+        "name": "Photographer / Videographer",
+        "description": "For photographers and video production",
+        "icon": "camera",
+        "features": ["Portfolio", "Packages", "Booking", "Video Samples"],
+        "color_scheme": "creative"
+    },
+    {
+        "id": "freelancer",
+        "name": "Freelancer",
+        "description": "For designers, developers, writers",
+        "icon": "laptop",
+        "features": ["Portfolio", "Skills", "Projects", "Hire Me"],
+        "color_scheme": "modern"
+    },
+    {
+        "id": "travel_agent",
+        "name": "Travel Agent",
+        "description": "For travel agencies and tour operators",
+        "icon": "plane",
+        "features": ["Tour Packages", "Destinations", "Itineraries", "Booking"],
+        "color_scheme": "adventure"
+    },
+    {
+        "id": "homestay",
+        "name": "Homestay / Guesthouse",
+        "description": "For homestays and guest accommodations",
+        "icon": "hotel",
+        "features": ["Rooms", "Amenities", "Gallery", "Enquiry Only"],
+        "color_scheme": "cozy"
+    },
+    {
+        "id": "pest_control",
+        "name": "Pest Control",
+        "description": "For pest control and fumigation services",
+        "icon": "bug",
+        "features": ["Services", "Treatment Plans", "Pricing", "Emergency Service"],
+        "color_scheme": "service"
+    },
+    {
+        "id": "chef",
+        "name": "Chef / Catering",
+        "description": "For personal chefs and catering services",
+        "icon": "chef-hat",
+        "features": ["Menu", "Specialties", "Events", "Booking"],
+        "color_scheme": "culinary"
     }
 ]
