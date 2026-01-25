@@ -1,6 +1,91 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { MessageCircle, Phone, MapPin, Clock, ShoppingCart, Calendar, Plus, Minus, X } from 'lucide-react';
+import axios from 'axios';
+import { toast } from 'sonner';
+
+// Import template components
+import RestaurantTemplate from './templates/RestaurantTemplate';
+import RetailTemplate from './templates/RetailTemplate';
+import DoctorTemplate from './templates/DoctorTemplate';
+// Generic fallback for other templates
+import GenericTemplate from './CustomerSiteGeneric';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API_BASE = `${BACKEND_URL}/api`;
+
+const CustomerSite = () => {
+  const { subdomain } = useParams();
+  const [business, setBusiness] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchData();
+  }, [subdomain]);
+
+  const fetchData = async () => {
+    try {
+      const [businessRes, productsRes] = await Promise.all([
+        axios.get(`${API_BASE}/public/businesses/${subdomain}`),
+        axios.get(`${API_BASE}/businesses/${subdomain}/products`).catch(() => ({ data: [] }))
+      ]);
+      
+      setBusiness(businessRes.data);
+      
+      // Fetch products using business ID
+      if (businessRes.data.id) {
+        const prodsRes = await axios.get(`${API_BASE}/businesses/${businessRes.data.id}/products`);
+        setProducts(prodsRes.data.filter(p => p.is_available));
+      }
+    } catch (error) {
+      toast.error('Business not found');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!business) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-2">Business not found</h2>
+          <p className="text-muted-foreground">The business you're looking for doesn't exist.</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Route to appropriate template based on business type
+  const templateType = business.template_type;
+  
+  if (templateType === 'restaurant') {
+    return <RestaurantTemplate business={business} products={products} />;
+  }
+  
+  if (templateType === 'retail' || templateType === 'grocery') {
+    return <RetailTemplate business={business} products={products} />;
+  }
+  
+  if (templateType === 'doctor' || templateType === 'clinic' || templateType === 'diagnostic') {
+    return <DoctorTemplate business={business} products={products} />;
+  }
+  
+  // Fallback to generic template for other business types
+  return <GenericTemplate business={business} products={products} />;
+};
+
+export default CustomerSite;
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
