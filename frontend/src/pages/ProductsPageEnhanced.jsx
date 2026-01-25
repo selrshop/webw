@@ -102,9 +102,12 @@ const ProductsPageEnhanced = () => {
     setFormData({
       name: '',
       description: '',
-      price: '',
+      mrp: '',
+      sale_price: '',
       image_url: '',
       category: '',
+      product_type: 'general',
+      bulk_pricing: [],
       is_available: true
     });
     setEditingProduct(null);
@@ -115,12 +118,35 @@ const ProductsPageEnhanced = () => {
     setFormData({
       name: product.name,
       description: product.description,
-      price: product.price.toString(),
+      mrp: (product.mrp || product.price || 0).toString(),
+      sale_price: (product.sale_price || product.price || 0).toString(),
       image_url: product.image_url || '',
       category: product.category || '',
+      product_type: product.product_type || 'general',
+      bulk_pricing: product.bulk_pricing || [],
       is_available: product.is_available
     });
     setShowDialog(true);
+  };
+
+  const addBulkPricing = () => {
+    setFormData({
+      ...formData,
+      bulk_pricing: [...formData.bulk_pricing, { min_quantity: '', price_per_unit: '' }]
+    });
+  };
+
+  const updateBulkPricing = (index, field, value) => {
+    const newBulk = [...formData.bulk_pricing];
+    newBulk[index][field] = value;
+    setFormData({...formData, bulk_pricing: newBulk});
+  };
+
+  const removeBulkPricing = (index) => {
+    setFormData({
+      ...formData,
+      bulk_pricing: formData.bulk_pricing.filter((_, i) => i !== index)
+    });
   };
 
   return (
