@@ -41,7 +41,11 @@ const UniversalServiceTemplate = ({ business, products }) => {
 
   const handleEnquiry = async (e) => {
     e.preventDefault();
-    const message = `Enquiry from ${enquiryData.customer_name}\\n\\nPhone: ${enquiryData.customer_phone}\\nEmail: ${enquiryData.customer_email}\\nMessage: ${enquiryData.notes}`;
+    const message = `Enquiry from ${enquiryData.customer_name}
+
+Phone: ${enquiryData.customer_phone}
+Email: ${enquiryData.customer_email}
+Message: ${enquiryData.notes}`;
     openWhatsApp(business.whatsapp_number, message);
     toast.success('Enquiry sent! We will get back to you soon.');
     setShowEnquiry(false);
@@ -51,7 +55,13 @@ const UniversalServiceTemplate = ({ business, products }) => {
     e.preventDefault();
     try {
       await axios.post(`${API_BASE}/businesses/${business.id}/bookings`, bookingData);
-      const message = `Booking Request from ${bookingData.customer_name}\\n\\nService: ${bookingData.service_type}\\nDate: ${bookingData.preferred_date}\\nTime: ${bookingData.preferred_time}\\nPhone: ${bookingData.customer_phone}\\nNotes: ${bookingData.notes}`;
+      const message = `Booking Request from ${bookingData.customer_name}
+
+Service: ${bookingData.service_type}
+Date: ${bookingData.preferred_date}
+Time: ${bookingData.preferred_time}
+Phone: ${bookingData.customer_phone}
+Notes: ${bookingData.notes}`;
       openWhatsApp(business.whatsapp_number, message);
       toast.success('Booking request sent!');
       setShowBooking(false);
