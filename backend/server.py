@@ -134,6 +134,9 @@ class BusinessCreate(BaseModel):
     social_media_links: Optional[SocialMediaLinks] = None
     whatsapp_api_enabled: bool = False
     whatsapp_api_key: Optional[str] = None
+    delivery_charges: Optional[float] = 0.0
+    tax_percentage: Optional[float] = 0.0  # GST/Tax percentage
+    min_order_for_free_delivery: Optional[float] = None
 
 class BusinessUpdate(BaseModel):
     name: Optional[str] = None
@@ -153,6 +156,9 @@ class BusinessUpdate(BaseModel):
     social_media_links: Optional[SocialMediaLinks] = None
     whatsapp_api_enabled: Optional[bool] = None
     whatsapp_api_key: Optional[str] = None
+    delivery_charges: Optional[float] = None
+    tax_percentage: Optional[float] = None
+    min_order_for_free_delivery: Optional[float] = None
 
 class Business(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -177,6 +183,9 @@ class Business(BaseModel):
     reviews: List[Review] = []
     whatsapp_api_enabled: bool = False
     whatsapp_api_key: Optional[str] = None
+    delivery_charges: float = 0.0
+    tax_percentage: float = 0.0
+    min_order_for_free_delivery: Optional[float] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     is_active: bool = True
 
