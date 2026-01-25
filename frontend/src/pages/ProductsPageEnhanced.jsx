@@ -49,21 +49,32 @@ const ProductsPageEnhanced = () => {
     }
   };
 
+  const calculateDiscount = (mrp, salePrice) => {
+    if (mrp > 0 && salePrice < mrp) {
+      return Math.round(((mrp - salePrice) / mrp) * 100);
+    }
+    return 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    const payload = {
+      ...formData,
+      mrp: parseFloat(formData.mrp),
+      sale_price: parseFloat(formData.sale_price),
+      bulk_pricing: formData.bulk_pricing.map(bp => ({
+        min_quantity: parseInt(bp.min_quantity),
+        price_per_unit: parseFloat(bp.price_per_unit)
+      }))
+    };
+    
     try {
       if (editingProduct) {
-        await api.put(`/businesses/${businessId}/products/${editingProduct.id}`, {
-          ...formData,
-          price: parseFloat(formData.price)
-        });
+        await api.put(`/businesses/${businessId}/products/${editingProduct.id}`, payload);
         toast.success('Product updated!');
       } else {
-        await api.post(`/businesses/${businessId}/products`, {
-          ...formData,
-          price: parseFloat(formData.price)
-        });
+        await api.post(`/businesses/${businessId}/products`, payload);
         toast.success('Product added!');
       }
       
