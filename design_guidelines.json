@@ -1,0 +1,124 @@
+{
+  "identity": {
+    "name": "E1",
+    "mission": "Create a 'Desi-Modern' SaaS that feels trustworthy, vibrant, and incredibly fast.",
+    "principles": [
+      "Fusion: Swiss Grid meets Indian Bazaar vibrancy.",
+      "Emotion: Trust and Warmth over 'Tech Cool'.",
+      "Content: Mobile-first storytelling.",
+      "Contrast: High contrast for readability in bright sunlight (common in India)."
+    ]
+  },
+  "typography": {
+    "font_family": {
+      "heading": "Outfit, sans-serif",
+      "body": "Inter, sans-serif",
+      "mono": "JetBrains Mono, monospace"
+    },
+    "scale": {
+      "h1": "text-4xl md:text-6xl font-bold tracking-tight",
+      "h2": "text-3xl md:text-5xl font-semibold tracking-tight",
+      "h3": "text-2xl md:text-3xl font-medium",
+      "body_large": "text-lg md:text-xl leading-relaxed",
+      "body_base": "text-base leading-relaxed",
+      "caption": "text-sm text-muted-foreground uppercase tracking-wider"
+    },
+    "imports": [
+      "@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');"
+    ]
+  },
+  "colors": {
+    "palette": {
+      "primary": {
+        "DEFAULT": "#047857",
+        "foreground": "#FFFFFF",
+        "description": "Deep Jungle Green - Trust, Growth, WhatsApp connection"
+      },
+      "secondary": {
+        "DEFAULT": "#F59E0B",
+        "foreground": "#000000",
+        "description": "Marigold Orange - Warmth, Festivity, Action"
+      },
+      "accent": {
+        "DEFAULT": "#10B981",
+        "foreground": "#FFFFFF",
+        "description": "Vibrant Emerald - Success states, WhatsApp active"
+      },
+      "background": {
+        "DEFAULT": "#FDFBF7",
+        "description": "Warm Paper - Avoids sterile white, feels like premium stationery"
+      },
+      "surface": {
+        "DEFAULT": "#FFFFFF",
+        "description": "Pure white for cards to pop against the warm background"
+      },
+      "muted": {
+        "DEFAULT": "#F3F4F6",
+        "foreground": "#6B7280"
+      },
+      "border": "#E5E7EB"
+    },
+    "gradients": {
+      "hero": "bg-gradient-to-br from-emerald-50 to-amber-50",
+      "subtle": "bg-gradient-to-b from-white to-stone-50"
+    }
+  },
+  "layout": {
+    "spacing": {
+      "container_padding": "px-4 md:px-8 lg:px-12",
+      "section_gap": "py-16 md:py-24",
+      "element_gap": "gap-6 md:gap-8"
+    },
+    "grid_systems": {
+      "bento": "grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6",
+      "dashboard": "grid grid-cols-1 md:grid-cols-12 gap-6",
+      "mobile_feed": "flex flex-col gap-4"
+    },
+    "border_radius": {
+      "default": "rounded-xl",
+      "card": "rounded-2xl",
+      "button": "rounded-full"
+    }
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg hover:shadow-xl transition-all duration-300 rounded-full px-8 py-6 text-lg font-medium",
+      "secondary": "bg-white text-primary border-2 border-primary/20 hover:border-primary hover:bg-primary/5 transition-all duration-300 rounded-full px-8 py-6 text-lg font-medium",
+      "whatsapp": "bg-[#25D366] text-white hover:bg-[#128C7E] shadow-md hover:shadow-lg transition-all rounded-full flex items-center gap-2 px-6 py-3"
+    },
+    "cards": {
+      "feature": "bg-white border border-border/50 shadow-sm hover:shadow-md transition-all duration-300 p-6 rounded-2xl",
+      "pricing": "bg-white border-2 border-transparent hover:border-primary/20 shadow-lg hover:shadow-xl transition-all duration-300 p-8 rounded-3xl relative overflow-hidden"
+    },
+    "inputs": {
+      "default": "bg-white border-border focus:border-primary focus:ring-primary/20 rounded-lg h-12 px-4"
+    }
+  },
+  "visual_assets": {
+    "images": {
+      "hero_main": "https://images.pexels.com/photos/3932728/pexels-photo-3932728.jpeg",
+      "feature_cafe": "https://images.unsplash.com/photo-1673185180955-bb5d3e6b2a51?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2OTF8MHwxfHNlYXJjaHwzfHxtb2Rlcm4lMjBpbmRpYW4lMjBjYWZlJTIwaW50ZXJpb3IlMjBicmlnaHR8ZW58MHx8fHwxNzY5MzY5NzczfDA&ixlib=rb-4.1.0&q=85",
+      "feature_mobile": "https://images.pexels.com/photos/4132538/pexels-photo-4132538.jpeg",
+      "placeholder_logo": "https://via.placeholder.com/150x50?text=BrandLogo"
+    },
+    "icons": {
+      "library": "lucide-react",
+      "style": "stroke-width-1.5"
+    }
+  },
+  "motion": {
+    "transitions": "transition-all duration-300 ease-out",
+    "hover_lift": "hover:-translate-y-1 hover:shadow-lg",
+    "fade_in": "animate-in fade-in duration-500 slide-in-from-bottom-4"
+  },
+  "universal_guidelines": [
+    "Do not use generic 'SaaS Blue'. Use the defined Jungle Green and Marigold.",
+    "Ensure all text is legible on mobile devices (16px minimum for body).",
+    "Use 'Outfit' font for all headings to give a modern, geometric feel.",
+    "Add 'data-testid' to all interactive elements.",
+    "For the Dashboard, use a dense but clean layout. Avoid excessive whitespace that requires scrolling.",
+    "For the Public Sites, simulate a mobile-app feel even on desktop (narrow central container option).",
+    "Use 'sonner' for all toast notifications.",
+    "Never use gradients for text. Keep text solid and high-contrast."
+  ]
+}
