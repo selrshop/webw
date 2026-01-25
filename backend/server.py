@@ -96,16 +96,37 @@ class AuthResponse(BaseModel):
     user: User
 
 # Business Models
+class SocialMediaLinks(BaseModel):
+    instagram: Optional[str] = None
+    facebook: Optional[str] = None
+    twitter: Optional[str] = None
+    linkedin: Optional[str] = None
+    youtube: Optional[str] = None
+    pinterest: Optional[str] = None
+
+class Review(BaseModel):
+    customer_name: str
+    rating: int
+    comment: str
+    date: str
+
 class BusinessCreate(BaseModel):
     name: str
     description: str
     subdomain: str
     whatsapp_number: str
     category: str
+    template_type: str  # restaurant, salon, retail, grocery, clinic, services, etc.
     logo_url: Optional[str] = None
     cover_image_url: Optional[str] = None
+    gallery_images: Optional[List[str]] = []
+    youtube_video_url: Optional[str] = None
     address: Optional[str] = None
+    mobile_number: Optional[str] = None
     business_hours: Optional[str] = None
+    location_map_url: Optional[str] = None
+    qr_code_url: Optional[str] = None
+    social_media_links: Optional[SocialMediaLinks] = None
     whatsapp_api_enabled: bool = False
     whatsapp_api_key: Optional[str] = None
 
@@ -114,10 +135,17 @@ class BusinessUpdate(BaseModel):
     description: Optional[str] = None
     whatsapp_number: Optional[str] = None
     category: Optional[str] = None
+    template_type: Optional[str] = None
     logo_url: Optional[str] = None
     cover_image_url: Optional[str] = None
+    gallery_images: Optional[List[str]] = None
+    youtube_video_url: Optional[str] = None
     address: Optional[str] = None
+    mobile_number: Optional[str] = None
     business_hours: Optional[str] = None
+    location_map_url: Optional[str] = None
+    qr_code_url: Optional[str] = None
+    social_media_links: Optional[SocialMediaLinks] = None
     whatsapp_api_enabled: Optional[bool] = None
     whatsapp_api_key: Optional[str] = None
 
@@ -130,10 +158,18 @@ class Business(BaseModel):
     subdomain: str
     whatsapp_number: str
     category: str
+    template_type: str
     logo_url: Optional[str] = None
     cover_image_url: Optional[str] = None
+    gallery_images: List[str] = []
+    youtube_video_url: Optional[str] = None
     address: Optional[str] = None
+    mobile_number: Optional[str] = None
     business_hours: Optional[str] = None
+    location_map_url: Optional[str] = None
+    qr_code_url: Optional[str] = None
+    social_media_links: Optional[SocialMediaLinks] = None
+    reviews: List[Review] = []
     whatsapp_api_enabled: bool = False
     whatsapp_api_key: Optional[str] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
