@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { MessageCircle, ArrowLeft, Save } from 'lucide-react';
+import { MessageCircle, ArrowLeft, Save, Palette, Truck, Receipt } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,6 +8,17 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
 import api from '@/utils/api';
+
+const COLOR_PRESETS = [
+  { name: 'Blue (Default)', primary: '#2563eb', secondary: '#3b82f6', accent: '#60a5fa' },
+  { name: 'Green', primary: '#16a34a', secondary: '#22c55e', accent: '#4ade80' },
+  { name: 'Purple', primary: '#7c3aed', secondary: '#8b5cf6', accent: '#a78bfa' },
+  { name: 'Red', primary: '#dc2626', secondary: '#ef4444', accent: '#f87171' },
+  { name: 'Orange', primary: '#ea580c', secondary: '#f97316', accent: '#fb923c' },
+  { name: 'Teal', primary: '#0d9488', secondary: '#14b8a6', accent: '#2dd4bf' },
+  { name: 'Pink', primary: '#db2777', secondary: '#ec4899', accent: '#f472b6' },
+  { name: 'Indigo', primary: '#4f46e5', secondary: '#6366f1', accent: '#818cf8' },
+];
 
 const BusinessSettings = () => {
   const { businessId } = useParams();
