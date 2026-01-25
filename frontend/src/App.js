@@ -8,7 +8,7 @@ import AuthPage from "@/pages/AuthPage";
 import Dashboard from "@/pages/Dashboard";
 import BusinessSetup from "@/pages/BusinessSetup";
 import BusinessSettings from "@/pages/BusinessSettings";
-import ProductsPage from "@/pages/ProductsPage";
+import ProductsPageEnhanced from "@/pages/ProductsPageEnhanced";
 import BookingsPage from "@/pages/BookingsPage";
 import OrdersPage from "@/pages/OrdersPage";
 import CustomerSite from "@/pages/CustomerSite";
