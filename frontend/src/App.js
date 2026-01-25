@@ -50,7 +50,7 @@ function App() {
           } />
           <Route path="/business/:businessId/products" element={
             <ProtectedRoute>
-              <ProductsPage />
+              <ProductsPageEnhanced />
             </ProtectedRoute>
           } />
           <Route path="/business/:businessId/bookings" element={
