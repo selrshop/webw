@@ -185,6 +185,10 @@ class BulkPricing(BaseModel):
     min_quantity: int
     price_per_unit: float
 
+class ProductVariant(BaseModel):
+    name: str  # e.g., "Small", "Medium", "Red", "Blue"
+    price_adjustment: float = 0.0  # Additional price for this variant
+    
 class ProductCreate(BaseModel):
     name: str
     description: str
@@ -194,6 +198,11 @@ class ProductCreate(BaseModel):
     image_url: Optional[str] = None
     category: Optional[str] = None
     product_type: Optional[str] = "general"  # food, clothing, grocery, service, etc.
+    is_veg: Optional[bool] = None  # For food items
+    sizes: Optional[List[str]] = []  # For clothing/products: ["S", "M", "L", "XL"]
+    colors: Optional[List[str]] = []  # For products: ["Red", "Blue", "Green"]
+    variants: Optional[List[ProductVariant]] = []  # Generic variants
+    stock_quantity: Optional[int] = None  # For inventory
     is_available: bool = True
 
 class ProductUpdate(BaseModel):
@@ -205,6 +214,11 @@ class ProductUpdate(BaseModel):
     image_url: Optional[str] = None
     category: Optional[str] = None
     product_type: Optional[str] = None
+    is_veg: Optional[bool] = None
+    sizes: Optional[List[str]] = None
+    colors: Optional[List[str]] = None
+    variants: Optional[List[ProductVariant]] = None
+    stock_quantity: Optional[int] = None
     is_available: Optional[bool] = None
 
 class Product(BaseModel):
@@ -220,6 +234,11 @@ class Product(BaseModel):
     image_url: Optional[str] = None
     category: Optional[str] = None
     product_type: str = "general"
+    is_veg: Optional[bool] = None
+    sizes: List[str] = []
+    colors: List[str] = []
+    variants: List[ProductVariant] = []
+    stock_quantity: Optional[int] = None
     is_available: bool = True
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
