@@ -509,9 +509,11 @@ async def create_order(business_id: str, order_data: OrderCreate):
             product_id=item.product_id,
             product_name=product['name'],
             quantity=item.quantity,
-            price=product['price']
+            mrp=product.get('mrp', product.get('price', 0)),
+            sale_price=product.get('sale_price', product.get('price', 0)),
+            discount_percentage=product.get('discount_percentage', 0)
         ))
-        total_amount += product['price'] * item.quantity
+        total_amount += product.get('sale_price', product.get('price', 0)) * item.quantity
     
     order = Order(
         business_id=business_id,
