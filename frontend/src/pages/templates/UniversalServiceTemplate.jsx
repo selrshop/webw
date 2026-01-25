@@ -220,9 +220,9 @@ const UniversalServiceTemplate = ({ business, products }) => {
                     {service.sale_price && (
                       <div className=\"text-right\">
                         {service.mrp > service.sale_price && (
-                          <div className=\"text-sm text-gray-400 line-through\">{'\u20B9'}{service.mrp}</div>
+                          <div className=\"text-sm text-gray-400 line-through\">₹{service.mrp}</div>
                         )}
-                        <div className=\"text-2xl font-bold theme-primary-text\">{'\u20B9'}{service.sale_price || service.price}</div>
+                        <div className=\"text-2xl font-bold theme-primary-text\">₹{service.sale_price || service.price}</div>
                       </div>
                     )}
                   </div>
@@ -354,9 +354,9 @@ const UniversalServiceTemplate = ({ business, products }) => {
               {selectedService.sale_price && (
                 <div className=\"mb-4\">
                   {selectedService.mrp > selectedService.sale_price && (
-                    <span className=\"text-lg text-gray-400 line-through mr-2\">{'\u20B9'}{selectedService.mrp}</span>
+                    <span className=\"text-lg text-gray-400 line-through mr-2\">₹{selectedService.mrp}</span>
                   )}
-                  <span className=\"text-3xl font-bold theme-primary-text\">{'\u20B9'}{selectedService.sale_price || selectedService.price}</span>
+                  <span className=\"text-3xl font-bold theme-primary-text\">₹{selectedService.sale_price || selectedService.price}</span>
                 </div>
               )}
               <Button onClick={() => { setSelectedService(null); setShowBooking(true); setBookingData({...bookingData, service_type: selectedService.name}); }} className=\"w-full theme-primary text-white rounded-full\">
