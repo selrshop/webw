@@ -64,6 +64,12 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
         raise HTTPException(status_code=401, detail="User not found")
     return user
 
+# ============ Health Check Route ============
+
+@api_router.get("/health")
+async def health_check():
+    return {"status": "healthy", "message": "WAConnect API is running"}
+
 # ============ Pydantic Models ============
 
 # User Models
