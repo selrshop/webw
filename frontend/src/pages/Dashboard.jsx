@@ -15,6 +15,15 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Redirect based on role
+    if (user?.role === 'super_admin') {
+      navigate('/admin');
+      return;
+    }
+    if (user?.role === 'reseller') {
+      navigate('/reseller');
+      return;
+    }
     fetchBusinesses();
   }, []);
 
