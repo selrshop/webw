@@ -12,9 +12,25 @@ import { toast } from 'sonner';
 import api from '@/utils/api';
 
 const PRODUCT_TYPES = [
-  'general', 'food', 'clothing', 'grocery', 'electronics', 
-  'service', 'medicine', 'cosmetics', 'hardware', 'other'
+  { value: 'general', label: 'General', hasVeg: false, hasSizes: false, hasColors: false },
+  { value: 'food', label: 'Food & Beverages', hasVeg: true, hasSizes: false, hasColors: false },
+  { value: 'clothing', label: 'Clothing & Apparel', hasVeg: false, hasSizes: true, hasColors: true },
+  { value: 'grocery', label: 'Grocery', hasVeg: true, hasSizes: false, hasColors: false },
+  { value: 'electronics', label: 'Electronics', hasVeg: false, hasSizes: false, hasColors: true },
+  { value: 'service', label: 'Service', hasVeg: false, hasSizes: false, hasColors: false },
+  { value: 'medicine', label: 'Medicine', hasVeg: false, hasSizes: false, hasColors: false },
+  { value: 'cosmetics', label: 'Cosmetics', hasVeg: false, hasSizes: true, hasColors: true },
+  { value: 'hardware', label: 'Hardware', hasVeg: false, hasSizes: true, hasColors: true },
+  { value: 'other', label: 'Other', hasVeg: false, hasSizes: false, hasColors: false }
 ];
+
+const SIZES_PRESETS = {
+  clothing: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+  cosmetics: ['Small', 'Medium', 'Large'],
+  hardware: ['Small', 'Medium', 'Large']
+};
+
+const COLOR_PRESETS = ['Red', 'Blue', 'Green', 'Black', 'White', 'Yellow', 'Pink', 'Purple', 'Orange', 'Brown', 'Grey'];
 
 const ProductsPageEnhanced = () => {
   const { businessId } = useParams();
@@ -31,8 +47,14 @@ const ProductsPageEnhanced = () => {
     category: '',
     product_type: 'general',
     bulk_pricing: [],
-    is_available: true
+    is_available: true,
+    is_veg: null,
+    sizes: [],
+    colors: [],
+    stock_quantity: ''
   });
+  const [newSize, setNewSize] = useState('');
+  const [newColor, setNewColor] = useState('');
 
   useEffect(() => {
     fetchProducts();
@@ -56,6 +78,10 @@ const ProductsPageEnhanced = () => {
     return 0;
   };
 
+  const getProductTypeConfig = (type) => {
+    return PRODUCT_TYPES.find(pt => pt.value === type) || PRODUCT_TYPES[0];
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -63,6 +89,7 @@ const ProductsPageEnhanced = () => {
       ...formData,
       mrp: parseFloat(formData.mrp),
       sale_price: parseFloat(formData.sale_price),
+      stock_quantity: formData.stock_quantity ? parseInt(formData.stock_quantity) : null,
       bulk_pricing: formData.bulk_pricing.map(bp => ({
         min_quantity: parseInt(bp.min_quantity),
         price_per_unit: parseFloat(bp.price_per_unit)
@@ -108,8 +135,14 @@ const ProductsPageEnhanced = () => {
       category: '',
       product_type: 'general',
       bulk_pricing: [],
-      is_available: true
+      is_available: true,
+      is_veg: null,
+      sizes: [],
+      colors: [],
+      stock_quantity: ''
     });
+    setNewSize('');
+    setNewColor('');
     setEditingProduct(null);
   };
 
@@ -124,9 +157,37 @@ const ProductsPageEnhanced = () => {
       category: product.category || '',
       product_type: product.product_type || 'general',
       bulk_pricing: product.bulk_pricing || [],
-      is_available: product.is_available
+      is_available: product.is_available,
+      is_veg: product.is_veg,
+      sizes: product.sizes || [],
+      colors: product.colors || [],
+      stock_quantity: product.stock_quantity?.toString() || ''
     });
+    setNewSize('');
+    setNewColor('');
     setShowDialog(true);
+  };
+
+  const addSize = (size) => {
+    if (size && !formData.sizes.includes(size)) {
+      setFormData({ ...formData, sizes: [...formData.sizes, size] });
+    }
+    setNewSize('');
+  };
+
+  const removeSize = (size) => {
+    setFormData({ ...formData, sizes: formData.sizes.filter(s => s !== size) });
+  };
+
+  const addColor = (color) => {
+    if (color && !formData.colors.includes(color)) {
+      setFormData({ ...formData, colors: [...formData.colors, color] });
+    }
+    setNewColor('');
+  };
+
+  const removeColor = (color) => {
+    setFormData({ ...formData, colors: formData.colors.filter(c => c !== color) });
   };
 
   const addBulkPricing = () => {
