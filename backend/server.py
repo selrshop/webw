@@ -77,6 +77,7 @@ class UserSignup(BaseModel):
     name: str
     email: EmailStr
     password: str
+    role: Optional[str] = "business_owner"  # super_admin, reseller, business_owner
 
 class UserLogin(BaseModel):
     email: EmailStr
@@ -87,6 +88,7 @@ class User(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
     email: EmailStr
+    role: str = "business_owner"  # super_admin, reseller, business_owner
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class AuthResponse(BaseModel):
