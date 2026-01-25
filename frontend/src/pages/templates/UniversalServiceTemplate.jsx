@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MessageCircle, Phone, MapPin, Mail, Calendar, Award, CheckCircle, User, Briefcase, Clock, Instagram, Facebook, Twitter, Linkedin, Youtube, Pinterest } from 'lucide-react';
+import { MessageCircle, Phone, MapPin, Mail, Calendar, Award, CheckCircle, User, Briefcase, Clock, Instagram, Facebook, Twitter, Linkedin, Youtube, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -47,7 +47,7 @@ const UniversalServiceTemplate = ({ business, products }) => {
     { platform: 'twitter', icon: Twitter, url: business.social_media_links?.twitter },
     { platform: 'linkedin', icon: Linkedin, url: business.social_media_links?.linkedin },
     { platform: 'youtube', icon: Youtube, url: business.social_media_links?.youtube },
-    { platform: 'pinterest', icon: Pinterest, url: business.social_media_links?.pinterest }
+    { platform: 'pinterest', icon: Globe, url: business.social_media_links?.pinterest }
   ].filter(s => s.url);
 
   const handleEnquiry = async (e) => {
