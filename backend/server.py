@@ -263,7 +263,9 @@ class OrderItem(BaseModel):
     product_id: str
     product_name: str
     quantity: int
-    price: float
+    mrp: float
+    sale_price: float
+    discount_percentage: float
 
 class Order(BaseModel):
     model_config = ConfigDict(extra="ignore")
