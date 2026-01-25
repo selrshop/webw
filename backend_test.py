@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 
 class WAConnectAPITester:
-    def __init__(self, base_url="https://waconnect-5.preview.emergentagent.com"):
+    def __init__(self, base_url="https://wabizsite.preview.emergentagent.com"):
         self.base_url = base_url
         self.api_base = f"{base_url}/api"
         self.token = None
