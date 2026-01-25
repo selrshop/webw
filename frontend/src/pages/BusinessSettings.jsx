@@ -58,7 +58,13 @@ const BusinessSettings = () => {
         address: business.address,
         business_hours: business.business_hours,
         whatsapp_api_enabled: business.whatsapp_api_enabled,
-        whatsapp_api_key: business.whatsapp_api_key
+        whatsapp_api_key: business.whatsapp_api_key,
+        delivery_charges: parseFloat(business.delivery_charges) || 0,
+        tax_percentage: parseFloat(business.tax_percentage) || 0,
+        min_order_for_free_delivery: business.min_order_for_free_delivery ? parseFloat(business.min_order_for_free_delivery) : null,
+        primary_color: business.primary_color,
+        secondary_color: business.secondary_color,
+        accent_color: business.accent_color
       });
       toast.success('Settings saved successfully!');
     } catch (error) {
@@ -66,6 +72,15 @@ const BusinessSettings = () => {
     } finally {
       setSaving(false);
     }
+  };
+
+  const applyColorPreset = (preset) => {
+    setBusiness({
+      ...business,
+      primary_color: preset.primary,
+      secondary_color: preset.secondary,
+      accent_color: preset.accent
+    });
   };
 
   if (loading) {
