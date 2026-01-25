@@ -612,6 +612,92 @@ async def get_business_analytics(business_id: str, current_user: dict = Depends(
         "total_revenue": total_revenue
     }
 
+# ============ Admin Routes ============
+
+@api_router.get("/admin/users")
+async def get_all_users(current_user: dict = Depends(get_current_user)):
+    if current_user.get('role') != 'super_admin':
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    users = await db.users.find({}, {"_id": 0, "password": 0}).to_list(1000)
+    for user in users:
+        if isinstance(user.get('created_at'), str):
+            user['created_at'] = datetime.fromisoformat(user['created_at'])
+    return users
+
+@api_router.get("/admin/businesses")
+async def get_all_businesses(current_user: dict = Depends(get_current_user)):
+    if current_user.get('role') not in ['super_admin', 'reseller']:
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    businesses = await db.businesses.find({}, {"_id": 0}).to_list(1000)
+    for biz in businesses:
+        if isinstance(biz.get('created_at'), str):
+            biz['created_at'] = datetime.fromisoformat(biz['created_at'])
+    return businesses
+
+@api_router.get("/admin/stats")
+async def get_admin_stats(current_user: dict = Depends(get_current_user)):
+    if current_user.get('role') != 'super_admin':
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    total_users = await db.users.count_documents({})
+    total_businesses = await db.businesses.count_documents({})
+    active_businesses = await db.businesses.count_documents({"is_active": True})
+    total_products = await db.products.count_documents({})
+    total_orders = await db.orders.count_documents({})
+    total_bookings = await db.bookings.count_documents({})
+    
+    # Revenue calculation
+    orders = await db.orders.find({}, {"_id": 0, "total_amount": 1}).to_list(10000)
+    total_revenue = sum(order.get('total_amount', 0) for order in orders)
+    
+    return {
+        "total_users": total_users,
+        "total_businesses": total_businesses,
+        "active_businesses": active_businesses,
+        "total_products": total_products,
+        "total_orders": total_orders,
+        "total_bookings": total_bookings,
+        "total_revenue": total_revenue
+    }
+
+@api_router.put("/admin/users/{user_id}/role")
+async def update_user_role(user_id: str, role: str, current_user: dict = Depends(get_current_user)):
+    if current_user.get('role') != 'super_admin':
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    if role not in ['super_admin', 'reseller', 'business_owner']:
+        raise HTTPException(status_code=400, detail="Invalid role")
+    
+    await db.users.update_one({"id": user_id}, {"$set": {"role": role}})
+    return {"message": "Role updated successfully"}
+
+@api_router.get("/reseller/businesses")
+async def get_reseller_businesses(current_user: dict = Depends(get_current_user)):
+    if current_user.get('role') != 'reseller':
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    # For now, resellers can see all businesses they created
+    businesses = await db.businesses.find({"user_id": current_user['id']}, {"_id": 0}).to_list(1000)
+    for biz in businesses:
+        if isinstance(biz.get('created_at'), str):
+            biz['created_at'] = datetime.fromisoformat(biz['created_at'])
+    return businesses
+
+@api_router.get("/reseller/stats")
+async def get_reseller_stats(current_user: dict = Depends(get_current_user)):
+    if current_user.get('role') != 'reseller':
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    total_businesses = await db.businesses.count_documents({"user_id": current_user['id']})
+    active_businesses = await db.businesses.count_documents({"user_id": current_user['id'], "is_active": True})
+    
+    return {
+        "total_businesses": total_businesses,
+        "active_businesses": active_businesses
+    }
+
 # Include the router in the main app
 app.include_router(api_router)
 
