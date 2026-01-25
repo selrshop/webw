@@ -326,7 +326,7 @@ const ProductsPageEnhanced = () => {
 
       {/* Add/Edit Dialog */}
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
-        <DialogContent className="max-w-md" data-testid="product-dialog">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto" data-testid="product-dialog">
           <DialogHeader>
             <DialogTitle>{editingProduct ? 'Edit Product' : 'Add Product'}</DialogTitle>
           </DialogHeader>
