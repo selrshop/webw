@@ -270,18 +270,70 @@ const ProductsPageEnhanced = () => {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="productPrice">Price (₹) *</Label>
+                <Label htmlFor="productMRP">MRP {'\u20B9'} *</Label>
+                <Input
+                  id="productMRP"
+                  data-testid="product-mrp-input"
+                  type="number"
+                  step="0.01"
+                  value={formData.mrp}
+                  onChange={(e) => setFormData({...formData, mrp: e.target.value})}
+                  required
+                  className="mt-2"
+                />
+              </div>
+              <div>
+                <Label htmlFor="productPrice">Sale Price {'\u20B9'} *</Label>
                 <Input
                   id="productPrice"
                   data-testid="product-price-input"
                   type="number"
                   step="0.01"
-                  value={formData.price}
-                  onChange={(e) => setFormData({...formData, price: e.target.value})}
+                  value={formData.sale_price}
+                  onChange={(e) => setFormData({...formData, sale_price: e.target.value})}
                   required
                   className="mt-2"
                 />
               </div>
+            </div>
+
+            {formData.mrp && formData.sale_price && calculateDiscount(parseFloat(formData.mrp), parseFloat(formData.sale_price)) > 0 && (
+              <div className="text-sm text-accent font-medium">
+                Discount: {calculateDiscount(parseFloat(formData.mrp), parseFloat(formData.sale_price))}% OFF
+              </div>
+            )}
+
+            <div>
+              <Label>Bulk Pricing (Optional)</Label>
+              <p className="text-xs text-muted-foreground mb-2">Set lower prices for bulk purchases</p>
+              <div className="space-y-2">
+                {formData.bulk_pricing.map((bulk, idx) => (
+                  <div key={idx} className="flex gap-2">
+                    <Input
+                      placeholder="Min Quantity"
+                      type="number"
+                      value={bulk.min_quantity}
+                      onChange={(e) => updateBulkPricing(idx, 'min_quantity', e.target.value)}
+                    />
+                    <Input
+                      placeholder="Price per unit"
+                      type="number"
+                      step="0.01"
+                      value={bulk.price_per_unit}
+                      onChange={(e) => updateBulkPricing(idx, 'price_per_unit', e.target.value)}
+                    />
+                    <Button type="button" variant="ghost" size="sm" onClick={() => removeBulkPricing(idx)}>
+                      Remove
+                    </Button>
+                  </div>
+                ))}
+                <Button type="button" variant="outline" size="sm" onClick={addBulkPricing} className="w-full">
+                  + Add Bulk Pricing Tier
+                </Button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="productCategory">Category</Label>
                 <Input
@@ -291,6 +343,19 @@ const ProductsPageEnhanced = () => {
                   onChange={(e) => setFormData({...formData, category: e.target.value})}
                   className="mt-2"
                 />
+              </div>
+              <div>
+                <Label htmlFor="productType">Product Type</Label>
+                <Select value={formData.product_type} onValueChange={(value) => setFormData({...formData, product_type: value})}>
+                  <SelectTrigger className="mt-2">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PRODUCT_TYPES.map(type => (
+                      <SelectItem key={type} value={type}>{type}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             <div>
