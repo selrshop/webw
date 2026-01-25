@@ -71,6 +71,10 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
 async def health_check():
     return {"status": "healthy", "message": "WAConnect API is running"}
 
+@api_router.get("/templates")
+async def get_templates():
+    return {"templates": BUSINESS_TEMPLATES}
+
 # ============ Pydantic Models ============
 
 # User Models
