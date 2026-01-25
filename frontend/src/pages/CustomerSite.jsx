@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import RestaurantTemplate from './templates/RestaurantTemplate';
 import RetailTemplate from './templates/RetailTemplate';
 import DoctorTemplate from './templates/DoctorTemplate';
+import UniversalServiceTemplate from './templates/UniversalServiceTemplate';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API_BASE = `${BACKEND_URL}/api`;
