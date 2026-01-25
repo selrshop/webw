@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import RestaurantTemplate from './templates/RestaurantTemplate';
 import RetailTemplate from './templates/RetailTemplate';
 import DoctorTemplate from './templates/DoctorTemplate';
+import UniversalServiceTemplate from './templates/UniversalServiceTemplate';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API_BASE = `${BACKEND_URL}/api`;
@@ -62,20 +63,23 @@ const CustomerSite = () => {
   // Route to appropriate template based on business type
   const templateType = business.template_type;
   
-  if (templateType === 'restaurant') {
+  // Restaurant and food businesses
+  if (templateType === 'restaurant' || templateType === 'chef') {
     return <RestaurantTemplate business={business} products={products} />;
   }
   
+  // Retail, e-commerce, and product-based businesses
   if (templateType === 'retail' || templateType === 'grocery' || templateType === 'salon') {
     return <RetailTemplate business={business} products={products} />;
   }
   
+  // Medical and healthcare businesses
   if (templateType === 'doctor' || templateType === 'clinic' || templateType === 'diagnostic') {
     return <DoctorTemplate business={business} products={products} />;
   }
   
-  // Default fallback - use restaurant template as generic
-  return <RestaurantTemplate business={business} products={products} />;
+  // All other service-based businesses use Universal Template
+  return <UniversalServiceTemplate business={business} products={products} />;
 };
 
 export default CustomerSite;
