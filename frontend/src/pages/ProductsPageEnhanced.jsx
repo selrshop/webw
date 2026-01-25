@@ -432,17 +432,152 @@ const ProductsPageEnhanced = () => {
               </div>
               <div>
                 <Label htmlFor="productType">Product Type</Label>
-                <Select value={formData.product_type} onValueChange={(value) => setFormData({...formData, product_type: value})}>
+                <Select value={formData.product_type} onValueChange={(value) => setFormData({...formData, product_type: value, is_veg: null, sizes: [], colors: []})}>
                   <SelectTrigger className="mt-2">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     {PRODUCT_TYPES.map(type => (
-                      <SelectItem key={type} value={type}>{type}</SelectItem>
+                      <SelectItem key={type.value} value={type.value}>{type.label}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+
+            {/* Dynamic Attributes based on Product Type */}
+            {(() => {
+              const config = getProductTypeConfig(formData.product_type);
+              return (
+                <>
+                  {/* Veg/Non-Veg for Food products */}
+                  {config.hasVeg && (
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <Label className="text-sm font-medium mb-3 block">Food Type</Label>
+                      <div className="flex gap-4">
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="is_veg"
+                            checked={formData.is_veg === true}
+                            onChange={() => setFormData({...formData, is_veg: true})}
+                            className="w-4 h-4 text-green-600"
+                          />
+                          <span className="flex items-center gap-1">
+                            <span className="w-4 h-4 border-2 border-green-600 flex items-center justify-center rounded-sm">
+                              <span className="w-2 h-2 rounded-full bg-green-600"></span>
+                            </span>
+                            Vegetarian
+                          </span>
+                        </label>
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="is_veg"
+                            checked={formData.is_veg === false}
+                            onChange={() => setFormData({...formData, is_veg: false})}
+                            className="w-4 h-4 text-red-600"
+                          />
+                          <span className="flex items-center gap-1">
+                            <span className="w-4 h-4 border-2 border-red-600 flex items-center justify-center rounded-sm">
+                              <span className="w-2 h-2 rounded-full bg-red-600"></span>
+                            </span>
+                            Non-Vegetarian
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Sizes for Clothing/Products */}
+                  {config.hasSizes && (
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <Label className="text-sm font-medium mb-2 block">Available Sizes</Label>
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {formData.sizes.map(size => (
+                          <span key={size} className="inline-flex items-center gap-1 bg-primary/10 text-primary px-2 py-1 rounded text-sm">
+                            {size}
+                            <button type="button" onClick={() => removeSize(size)} className="hover:text-destructive">×</button>
+                          </span>
+                        ))}
+                      </div>
+                      <div className="flex gap-2 flex-wrap mb-2">
+                        {(SIZES_PRESETS[formData.product_type] || SIZES_PRESETS.clothing).map(size => (
+                          <Button
+                            key={size}
+                            type="button"
+                            variant={formData.sizes.includes(size) ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => formData.sizes.includes(size) ? removeSize(size) : addSize(size)}
+                            className="text-xs"
+                          >
+                            {size}
+                          </Button>
+                        ))}
+                      </div>
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="Custom size..."
+                          value={newSize}
+                          onChange={(e) => setNewSize(e.target.value)}
+                          className="flex-1"
+                        />
+                        <Button type="button" variant="outline" size="sm" onClick={() => addSize(newSize)}>Add</Button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Colors for Products */}
+                  {config.hasColors && (
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <Label className="text-sm font-medium mb-2 block">Available Colors</Label>
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {formData.colors.map(color => (
+                          <span key={color} className="inline-flex items-center gap-1 bg-blue-50 text-blue-700 px-2 py-1 rounded text-sm">
+                            {color}
+                            <button type="button" onClick={() => removeColor(color)} className="hover:text-destructive">×</button>
+                          </span>
+                        ))}
+                      </div>
+                      <div className="flex gap-2 flex-wrap mb-2">
+                        {COLOR_PRESETS.slice(0, 6).map(color => (
+                          <Button
+                            key={color}
+                            type="button"
+                            variant={formData.colors.includes(color) ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => formData.colors.includes(color) ? removeColor(color) : addColor(color)}
+                            className="text-xs"
+                          >
+                            {color}
+                          </Button>
+                        ))}
+                      </div>
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="Custom color..."
+                          value={newColor}
+                          onChange={(e) => setNewColor(e.target.value)}
+                          className="flex-1"
+                        />
+                        <Button type="button" variant="outline" size="sm" onClick={() => addColor(newColor)}>Add</Button>
+                      </div>
+                    </div>
+                  )}
+                </>
+              );
+            })()}
+
+            <div>
+              <Label htmlFor="stockQuantity">Stock Quantity (Optional)</Label>
+              <Input
+                id="stockQuantity"
+                type="number"
+                placeholder="Leave empty for unlimited"
+                value={formData.stock_quantity}
+                onChange={(e) => setFormData({...formData, stock_quantity: e.target.value})}
+                className="mt-2"
+              />
             </div>
             <div>
               <Label htmlFor="productImage">Image URL</Label>
