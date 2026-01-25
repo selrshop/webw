@@ -16,7 +16,7 @@ const PRODUCT_TYPES = [
   'service', 'medicine', 'cosmetics', 'hardware', 'other'
 ];
 
-const ProductsPage = () => {
+const ProductsPageEnhanced = () => {
   const { businessId } = useParams();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -25,9 +25,12 @@ const ProductsPage = () => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    price: '',
+    mrp: '',
+    sale_price: '',
     image_url: '',
     category: '',
+    product_type: 'general',
+    bulk_pricing: [],
     is_available: true
   });
 
