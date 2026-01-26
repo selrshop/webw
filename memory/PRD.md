@@ -60,13 +60,13 @@ Build a SaaS platform for businesses in India to create websites focused on What
 - [x] Session persistence verified working
 - [x] All 23 backend API tests passing
 - [x] Frontend fully functional
+- [x] **P2: Dynamic Product Attributes UI** - Veg/non-veg toggle for food/grocery, sizes/colors selection for clothing
+- [x] **P2: Business Settings UI** - Delivery charges, free delivery threshold, tax percentage, color scheme (8 presets + custom pickers)
 
-## Upcoming Tasks (P1/P2)
+## Upcoming Tasks (P1)
 - [ ] Create SalonTemplate.jsx (priority template)
 - [ ] Create GroceryTemplate.jsx (priority template)
 - [ ] Enhance templates with full feature set (gallery, video, social links, map, reviews, QR code)
-- [ ] Admin UI for dynamic product attributes (veg/non-veg, sizing/color)
-- [ ] Admin UI for business settings (delivery charges, taxes, color scheme)
 
 ## Future/Backlog
 - [ ] Payment gateway integrations (Razorpay, PayU, PhonePe)
