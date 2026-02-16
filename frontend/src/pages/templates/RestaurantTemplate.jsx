@@ -49,10 +49,17 @@ const RestaurantTemplate = ({ business, products }) => {
   const getSubtotal = () => cart.reduce((sum, item) => sum + ((item.sale_price || item.price) * item.quantity), 0);
   const getTax = () => (getSubtotal() * (business.tax_percentage || 0)) / 100;
   const getDelivery = () => {
+    // Use location-based delivery charge if available
+    if (deliveryInfo) {
+      if (!deliveryInfo.isDeliverable) return 0; // Will show error separately
+      return deliveryInfo.deliveryCharge;
+    }
+    // Fallback to order-value based delivery
     if (business.min_order_for_free_delivery && getSubtotal() >= business.min_order_for_free_delivery) return 0;
     return business.delivery_charges || 0;
   };
   const getTotal = () => getSubtotal() + getTax() + getDelivery();
+  const canDeliver = () => !deliveryInfo || deliveryInfo.isDeliverable;
 
   const handleOrder = async (e) => {
     e.preventDefault();
