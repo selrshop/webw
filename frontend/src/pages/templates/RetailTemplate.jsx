@@ -286,17 +286,42 @@ const RetailTemplate = ({ business, products }) => {
                 </div>
               </div>
             ))}
+            
+            {/* Delivery Calculator */}
+            <DeliveryCalculator 
+              business={business} 
+              onDeliveryCalculated={(info) => setDeliveryInfo(info)} 
+            />
+            
             <div className="space-y-2 pt-4 border-t">
               <div className="flex justify-between"><span>Subtotal:</span><span>{'₹'}{getSubtotal()}</span></div>
               <div className="flex justify-between text-sm"><span>Tax:</span><span>{'₹'}{getTax().toFixed(2)}</span></div>
-              <div className="flex justify-between text-sm"><span>Delivery:</span><span>{'₹'}{getDelivery()}</span></div>
+              <div className="flex justify-between text-sm">
+                <span>Delivery:</span>
+                <span className={getDelivery() === 0 ? 'text-green-600' : ''}>
+                  {getDelivery() === 0 ? 'FREE' : `₹${getDelivery()}`}
+                </span>
+              </div>
               <div className="flex justify-between font-bold text-lg"><span>Total:</span><span>{'₹'}{getTotal().toFixed(2)}</span></div>
             </div>
+            
+            {!canDeliver() && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-700 text-sm">
+                Sorry, we cannot deliver to your location. Please contact us for alternative options.
+              </div>
+            )}
+            
             <form onSubmit={handleOrder} className="space-y-3">
               <div><Label>Name *</Label><Input required value={orderData.customer_name} onChange={(e) => setOrderData({...orderData, customer_name: e.target.value})} /></div>
               <div><Label>Phone *</Label><Input required value={orderData.customer_phone} onChange={(e) => setOrderData({...orderData, customer_phone: e.target.value})} /></div>
               <div><Label>Delivery Address *</Label><Input required value={orderData.customer_address} onChange={(e) => setOrderData({...orderData, customer_address: e.target.value})} /></div>
-              <Button type="submit" className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white">Checkout via WhatsApp</Button>
+              <Button 
+                type="submit" 
+                className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white"
+                disabled={!canDeliver()}
+              >
+                Checkout via WhatsApp
+              </Button>
             </form>
           </div>
         </DialogContent>
