@@ -146,6 +146,17 @@ class BusinessCreate(BaseModel):
     free_delivery_radius_km: Optional[float] = 5.0  # Free delivery within this radius
     delivery_charge_beyond_radius: Optional[float] = 0.0  # Charge if beyond radius
     max_delivery_radius_km: Optional[float] = None  # Maximum delivery distance (optional)
+    # Payment Gateway Configuration
+    payment_gateway: Optional[str] = None  # razorpay, stripe, payu, phonepe
+    razorpay_key_id: Optional[str] = None
+    razorpay_key_secret: Optional[str] = None
+    stripe_publishable_key: Optional[str] = None
+    stripe_secret_key: Optional[str] = None
+    payu_merchant_key: Optional[str] = None
+    payu_merchant_salt: Optional[str] = None
+    phonepe_merchant_id: Optional[str] = None
+    phonepe_salt_key: Optional[str] = None
+    phonepe_salt_index: Optional[int] = None
 
 class BusinessUpdate(BaseModel):
     name: Optional[str] = None
