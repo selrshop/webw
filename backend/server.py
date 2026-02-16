@@ -140,6 +140,12 @@ class BusinessCreate(BaseModel):
     primary_color: Optional[str] = "#2563eb"  # Default blue
     secondary_color: Optional[str] = "#3b82f6"  # Lighter blue
     accent_color: Optional[str] = "#60a5fa"  # Accent
+    # Location-based delivery
+    business_latitude: Optional[float] = None
+    business_longitude: Optional[float] = None
+    free_delivery_radius_km: Optional[float] = 5.0  # Free delivery within this radius
+    delivery_charge_beyond_radius: Optional[float] = 0.0  # Charge if beyond radius
+    max_delivery_radius_km: Optional[float] = None  # Maximum delivery distance (optional)
 
 class BusinessUpdate(BaseModel):
     name: Optional[str] = None
@@ -165,6 +171,12 @@ class BusinessUpdate(BaseModel):
     primary_color: Optional[str] = None
     secondary_color: Optional[str] = None
     accent_color: Optional[str] = None
+    # Location-based delivery
+    business_latitude: Optional[float] = None
+    business_longitude: Optional[float] = None
+    free_delivery_radius_km: Optional[float] = None
+    delivery_charge_beyond_radius: Optional[float] = None
+    max_delivery_radius_km: Optional[float] = None
 
 class Business(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -195,6 +207,12 @@ class Business(BaseModel):
     primary_color: str = "#2563eb"
     secondary_color: str = "#3b82f6"
     accent_color: str = "#60a5fa"
+    # Location-based delivery
+    business_latitude: Optional[float] = None
+    business_longitude: Optional[float] = None
+    free_delivery_radius_km: float = 5.0
+    delivery_charge_beyond_radius: float = 0.0
+    max_delivery_radius_km: Optional[float] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     is_active: bool = True
 
