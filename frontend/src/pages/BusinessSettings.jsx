@@ -618,6 +618,239 @@ const BusinessSettings = () => {
             </div>
           </div>
 
+          {/* Payment Gateway Settings */}
+          <div className="bg-white rounded-2xl shadow-sm border border-border/50 p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <CreditCard className="w-5 h-5 text-primary" />
+              <h2 className="text-xl font-heading font-semibold">Payment Gateway</h2>
+            </div>
+            <p className="text-sm text-muted-foreground mb-4">
+              Configure a payment gateway to accept online payments from customers
+            </p>
+
+            {/* Gateway Selection */}
+            <div className="mb-6">
+              <Label>Select Payment Gateway</Label>
+              <Select 
+                value={business.payment_gateway || ''} 
+                onValueChange={(value) => setBusiness({...business, payment_gateway: value || null})}
+              >
+                <SelectTrigger className="mt-2" data-testid="payment-gateway-select">
+                  <SelectValue placeholder="Select a payment gateway" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">None (WhatsApp only)</SelectItem>
+                  {PAYMENT_GATEWAYS.map(gw => (
+                    <SelectItem key={gw.value} value={gw.value}>
+                      <span className="flex items-center gap-2">
+                        <span>{gw.icon}</span>
+                        <span>{gw.label}</span>
+                        <span className="text-xs text-muted-foreground">- {gw.description}</span>
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Razorpay Config */}
+            {business.payment_gateway === 'razorpay' && (
+              <div className="space-y-4 p-4 bg-orange-50 rounded-lg border border-orange-100">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg">🇮🇳</span>
+                  <h3 className="font-medium">Razorpay Configuration</h3>
+                </div>
+                <p className="text-xs text-muted-foreground mb-3">
+                  Get your API keys from <a href="https://dashboard.razorpay.com/app/keys" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Razorpay Dashboard</a>
+                </p>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="razorpayKeyId">Key ID</Label>
+                    <Input
+                      id="razorpayKeyId"
+                      data-testid="razorpay-key-id-input"
+                      placeholder="rzp_test_..."
+                      value={business.razorpay_key_id || ''}
+                      onChange={(e) => setBusiness({...business, razorpay_key_id: e.target.value})}
+                      className="mt-2"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="razorpayKeySecret">Key Secret</Label>
+                    <div className="flex gap-2 mt-2">
+                      <Input
+                        id="razorpayKeySecret"
+                        data-testid="razorpay-key-secret-input"
+                        type={showSecrets.razorpay ? 'text' : 'password'}
+                        placeholder="Enter your key secret"
+                        value={business.razorpay_key_secret || ''}
+                        onChange={(e) => setBusiness({...business, razorpay_key_secret: e.target.value})}
+                        className="flex-1"
+                      />
+                      <Button type="button" variant="outline" size="icon" onClick={() => toggleSecretVisibility('razorpay')}>
+                        {showSecrets.razorpay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Stripe Config */}
+            {business.payment_gateway === 'stripe' && (
+              <div className="space-y-4 p-4 bg-purple-50 rounded-lg border border-purple-100">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg">💳</span>
+                  <h3 className="font-medium">Stripe Configuration</h3>
+                </div>
+                <p className="text-xs text-muted-foreground mb-3">
+                  Get your API keys from <a href="https://dashboard.stripe.com/apikeys" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Stripe Dashboard</a>
+                </p>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="stripePublishableKey">Publishable Key</Label>
+                    <Input
+                      id="stripePublishableKey"
+                      data-testid="stripe-publishable-key-input"
+                      placeholder="pk_test_..."
+                      value={business.stripe_publishable_key || ''}
+                      onChange={(e) => setBusiness({...business, stripe_publishable_key: e.target.value})}
+                      className="mt-2"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="stripeSecretKey">Secret Key</Label>
+                    <div className="flex gap-2 mt-2">
+                      <Input
+                        id="stripeSecretKey"
+                        data-testid="stripe-secret-key-input"
+                        type={showSecrets.stripe ? 'text' : 'password'}
+                        placeholder="sk_test_..."
+                        value={business.stripe_secret_key || ''}
+                        onChange={(e) => setBusiness({...business, stripe_secret_key: e.target.value})}
+                        className="flex-1"
+                      />
+                      <Button type="button" variant="outline" size="icon" onClick={() => toggleSecretVisibility('stripe')}>
+                        {showSecrets.stripe ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* PayU Config */}
+            {business.payment_gateway === 'payu' && (
+              <div className="space-y-4 p-4 bg-green-50 rounded-lg border border-green-100">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg">🏦</span>
+                  <h3 className="font-medium">PayU Configuration</h3>
+                </div>
+                <p className="text-xs text-muted-foreground mb-3">
+                  Get your credentials from <a href="https://dashboard.payu.in" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">PayU Dashboard</a>
+                </p>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="payuMerchantKey">Merchant Key</Label>
+                    <Input
+                      id="payuMerchantKey"
+                      data-testid="payu-merchant-key-input"
+                      placeholder="Enter merchant key"
+                      value={business.payu_merchant_key || ''}
+                      onChange={(e) => setBusiness({...business, payu_merchant_key: e.target.value})}
+                      className="mt-2"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="payuMerchantSalt">Merchant Salt</Label>
+                    <div className="flex gap-2 mt-2">
+                      <Input
+                        id="payuMerchantSalt"
+                        data-testid="payu-merchant-salt-input"
+                        type={showSecrets.payu ? 'text' : 'password'}
+                        placeholder="Enter merchant salt"
+                        value={business.payu_merchant_salt || ''}
+                        onChange={(e) => setBusiness({...business, payu_merchant_salt: e.target.value})}
+                        className="flex-1"
+                      />
+                      <Button type="button" variant="outline" size="icon" onClick={() => toggleSecretVisibility('payu')}>
+                        {showSecrets.payu ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* PhonePe Config */}
+            {business.payment_gateway === 'phonepe' && (
+              <div className="space-y-4 p-4 bg-indigo-50 rounded-lg border border-indigo-100">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg">📱</span>
+                  <h3 className="font-medium">PhonePe Configuration</h3>
+                </div>
+                <p className="text-xs text-muted-foreground mb-3">
+                  Get your credentials from <a href="https://business.phonepe.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">PhonePe Business Dashboard</a>
+                </p>
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div>
+                    <Label htmlFor="phonepeMerchantId">Merchant ID</Label>
+                    <Input
+                      id="phonepeMerchantId"
+                      data-testid="phonepe-merchant-id-input"
+                      placeholder="MERCHANTID"
+                      value={business.phonepe_merchant_id || ''}
+                      onChange={(e) => setBusiness({...business, phonepe_merchant_id: e.target.value})}
+                      className="mt-2"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="phonepeSaltKey">Salt Key</Label>
+                    <div className="flex gap-2 mt-2">
+                      <Input
+                        id="phonepeSaltKey"
+                        data-testid="phonepe-salt-key-input"
+                        type={showSecrets.phonepe ? 'text' : 'password'}
+                        placeholder="Enter salt key"
+                        value={business.phonepe_salt_key || ''}
+                        onChange={(e) => setBusiness({...business, phonepe_salt_key: e.target.value})}
+                        className="flex-1"
+                      />
+                      <Button type="button" variant="outline" size="icon" onClick={() => toggleSecretVisibility('phonepe')}>
+                        {showSecrets.phonepe ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </Button>
+                    </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="phonepeSaltIndex">Salt Index</Label>
+                    <Input
+                      id="phonepeSaltIndex"
+                      data-testid="phonepe-salt-index-input"
+                      type="number"
+                      placeholder="1"
+                      value={business.phonepe_salt_index || ''}
+                      onChange={(e) => setBusiness({...business, phonepe_salt_index: e.target.value})}
+                      className="mt-2"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Status Indicator */}
+            {business.payment_gateway && (
+              <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-100">
+                <p className="text-sm text-blue-800">
+                  <strong>Status:</strong> {business.payment_gateway === 'razorpay' && business.razorpay_key_id && business.razorpay_key_secret ? '✅ Razorpay configured' :
+                    business.payment_gateway === 'stripe' && business.stripe_secret_key ? '✅ Stripe configured' :
+                    business.payment_gateway === 'payu' && business.payu_merchant_key && business.payu_merchant_salt ? '✅ PayU configured' :
+                    business.payment_gateway === 'phonepe' && business.phonepe_merchant_id && business.phonepe_salt_key ? '✅ PhonePe configured' :
+                    '⚠️ Please complete the configuration above'}
+                </p>
+              </div>
+            )}
+          </div>
+
           <div className="flex gap-4">
             <Button
               type="button"
