@@ -80,7 +80,18 @@ const BusinessSettings = () => {
         business_longitude: business.business_longitude ? parseFloat(business.business_longitude) : null,
         free_delivery_radius_km: parseFloat(business.free_delivery_radius_km) || 5.0,
         delivery_charge_beyond_radius: parseFloat(business.delivery_charge_beyond_radius) || 0,
-        max_delivery_radius_km: business.max_delivery_radius_km ? parseFloat(business.max_delivery_radius_km) : null
+        max_delivery_radius_km: business.max_delivery_radius_km ? parseFloat(business.max_delivery_radius_km) : null,
+        // Payment Gateway
+        payment_gateway: business.payment_gateway || null,
+        razorpay_key_id: business.razorpay_key_id || null,
+        razorpay_key_secret: business.razorpay_key_secret || null,
+        stripe_publishable_key: business.stripe_publishable_key || null,
+        stripe_secret_key: business.stripe_secret_key || null,
+        payu_merchant_key: business.payu_merchant_key || null,
+        payu_merchant_salt: business.payu_merchant_salt || null,
+        phonepe_merchant_id: business.phonepe_merchant_id || null,
+        phonepe_salt_key: business.phonepe_salt_key || null,
+        phonepe_salt_index: business.phonepe_salt_index ? parseInt(business.phonepe_salt_index) : null
       });
       toast.success('Settings saved successfully!');
     } catch (error) {
@@ -88,6 +99,10 @@ const BusinessSettings = () => {
     } finally {
       setSaving(false);
     }
+  };
+
+  const toggleSecretVisibility = (field) => {
+    setShowSecrets(prev => ({ ...prev, [field]: !prev[field] }));
   };
 
   const detectCurrentLocation = () => {
