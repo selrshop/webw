@@ -188,6 +188,36 @@ class BusinessUpdate(BaseModel):
     free_delivery_radius_km: Optional[float] = None
     delivery_charge_beyond_radius: Optional[float] = None
     max_delivery_radius_km: Optional[float] = None
+    # Payment Gateway Configuration
+    payment_gateway: Optional[str] = None
+    razorpay_key_id: Optional[str] = None
+    razorpay_key_secret: Optional[str] = None
+    stripe_publishable_key: Optional[str] = None
+    stripe_secret_key: Optional[str] = None
+    payu_merchant_key: Optional[str] = None
+    payu_merchant_salt: Optional[str] = None
+    phonepe_merchant_id: Optional[str] = None
+    phonepe_salt_key: Optional[str] = None
+    phonepe_salt_index: Optional[int] = None
+    mobile_number: Optional[str] = None
+    business_hours: Optional[str] = None
+    location_map_url: Optional[str] = None
+    qr_code_url: Optional[str] = None
+    social_media_links: Optional[SocialMediaLinks] = None
+    whatsapp_api_enabled: Optional[bool] = None
+    whatsapp_api_key: Optional[str] = None
+    delivery_charges: Optional[float] = None
+    tax_percentage: Optional[float] = None
+    min_order_for_free_delivery: Optional[float] = None
+    primary_color: Optional[str] = None
+    secondary_color: Optional[str] = None
+    accent_color: Optional[str] = None
+    # Location-based delivery
+    business_latitude: Optional[float] = None
+    business_longitude: Optional[float] = None
+    free_delivery_radius_km: Optional[float] = None
+    delivery_charge_beyond_radius: Optional[float] = None
+    max_delivery_radius_km: Optional[float] = None
 
 class Business(BaseModel):
     model_config = ConfigDict(extra="ignore")
