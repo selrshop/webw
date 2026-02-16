@@ -219,6 +219,11 @@ const UniversalServiceTemplate = ({ business, products }) => {
               {business.mobile_number && <p className="text-gray-600 text-sm">Alt: {business.mobile_number}</p>}
             </div>
           </div>
+          
+          {/* Delivery Calculator */}
+          <div className="mt-6">
+            <DeliveryCalculator business={business} />
+          </div>
         </div>
       </section>
 
