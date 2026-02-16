@@ -443,6 +443,94 @@ async def get_business_by_subdomain(subdomain: str):
         business['created_at'] = datetime.fromisoformat(business['created_at'])
     return business
 
+# ============ Delivery Charge Calculation ============
+
+import math
+
+def haversine_distance(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    """Calculate the distance between two points on Earth using Haversine formula (in km)"""
+    R = 6371  # Earth's radius in kilometers
+    
+    lat1_rad = math.radians(lat1)
+    lat2_rad = math.radians(lat2)
+    delta_lat = math.radians(lat2 - lat1)
+    delta_lon = math.radians(lon2 - lon1)
+    
+    a = math.sin(delta_lat / 2) ** 2 + math.cos(lat1_rad) * math.cos(lat2_rad) * math.sin(delta_lon / 2) ** 2
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    
+    return R * c
+
+class DeliveryChargeRequest(BaseModel):
+    customer_latitude: float
+    customer_longitude: float
+
+class DeliveryChargeResponse(BaseModel):
+    distance_km: float
+    delivery_charge: float
+    is_deliverable: bool
+    free_delivery_radius_km: float
+    message: str
+
+@api_router.post("/public/businesses/{subdomain}/calculate-delivery", response_model=DeliveryChargeResponse)
+async def calculate_delivery_charge(subdomain: str, location: DeliveryChargeRequest):
+    """Calculate delivery charge based on customer location"""
+    business = await db.businesses.find_one({"subdomain": subdomain, "is_active": True}, {"_id": 0})
+    if not business:
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    # Check if business has location set
+    if not business.get('business_latitude') or not business.get('business_longitude'):
+        # Return default delivery charge if no location set
+        return DeliveryChargeResponse(
+            distance_km=0,
+            delivery_charge=business.get('delivery_charges', 0),
+            is_deliverable=True,
+            free_delivery_radius_km=business.get('free_delivery_radius_km', 5.0),
+            message="Business location not configured. Standard delivery charges apply."
+        )
+    
+    # Calculate distance
+    distance = haversine_distance(
+        business['business_latitude'],
+        business['business_longitude'],
+        location.customer_latitude,
+        location.customer_longitude
+    )
+    distance = round(distance, 2)
+    
+    free_radius = business.get('free_delivery_radius_km', 5.0)
+    max_radius = business.get('max_delivery_radius_km')
+    charge_beyond = business.get('delivery_charge_beyond_radius', 0)
+    
+    # Check if within max delivery radius
+    if max_radius and distance > max_radius:
+        return DeliveryChargeResponse(
+            distance_km=distance,
+            delivery_charge=0,
+            is_deliverable=False,
+            free_delivery_radius_km=free_radius,
+            message=f"Sorry, we don't deliver beyond {max_radius} km. Your location is {distance} km away."
+        )
+    
+    # Calculate delivery charge
+    if distance <= free_radius:
+        return DeliveryChargeResponse(
+            distance_km=distance,
+            delivery_charge=0,
+            is_deliverable=True,
+            free_delivery_radius_km=free_radius,
+            message=f"Free delivery! You are {distance} km away (within {free_radius} km free delivery zone)."
+        )
+    else:
+        return DeliveryChargeResponse(
+            distance_km=distance,
+            delivery_charge=charge_beyond,
+            is_deliverable=True,
+            free_delivery_radius_km=free_radius,
+            message=f"Delivery charge: ₹{charge_beyond}. You are {distance} km away (beyond {free_radius} km free delivery zone)."
+        )
+
 # ============ Product Routes ============
 
 @api_router.post("/businesses/{business_id}/products", response_model=Product)
