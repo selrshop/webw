@@ -65,13 +65,61 @@ const BusinessSettings = () => {
         min_order_for_free_delivery: business.min_order_for_free_delivery ? parseFloat(business.min_order_for_free_delivery) : null,
         primary_color: business.primary_color,
         secondary_color: business.secondary_color,
-        accent_color: business.accent_color
+        accent_color: business.accent_color,
+        // Location-based delivery
+        business_latitude: business.business_latitude ? parseFloat(business.business_latitude) : null,
+        business_longitude: business.business_longitude ? parseFloat(business.business_longitude) : null,
+        free_delivery_radius_km: parseFloat(business.free_delivery_radius_km) || 5.0,
+        delivery_charge_beyond_radius: parseFloat(business.delivery_charge_beyond_radius) || 0,
+        max_delivery_radius_km: business.max_delivery_radius_km ? parseFloat(business.max_delivery_radius_km) : null
       });
       toast.success('Settings saved successfully!');
     } catch (error) {
       toast.error('Failed to save settings');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const detectCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error('Geolocation is not supported by your browser');
+      return;
+    }
+
+    setDetectingLocation(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setBusiness({
+          ...business,
+          business_latitude: position.coords.latitude.toFixed(6),
+          business_longitude: position.coords.longitude.toFixed(6)
+        });
+        toast.success('Location detected successfully!');
+        setDetectingLocation(false);
+      },
+      (error) => {
+        let message = 'Failed to detect location';
+        if (error.code === error.PERMISSION_DENIED) {
+          message = 'Location permission denied. Please enable location access.';
+        } else if (error.code === error.POSITION_UNAVAILABLE) {
+          message = 'Location information unavailable.';
+        } else if (error.code === error.TIMEOUT) {
+          message = 'Location request timed out.';
+        }
+        toast.error(message);
+        setDetectingLocation(false);
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+  };
+
+  const openInGoogleMaps = () => {
+    if (business.business_latitude && business.business_longitude) {
+      window.open(
+        `https://www.google.com/maps?q=${business.business_latitude},${business.business_longitude}`,
+        '_blank'
+      );
     }
   };
 
