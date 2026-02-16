@@ -21,6 +21,7 @@ const RestaurantTemplate = ({ business, products }) => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [orderData, setOrderData] = useState({ customer_name: '', customer_phone: '', customer_address: '', notes: '' });
   const [bookingData, setBookingData] = useState({ customer_name: '', customer_phone: '', service_type: 'Table Reservation', preferred_date: '', preferred_time: '', notes: '' });
+  const [deliveryInfo, setDeliveryInfo] = useState(null);
 
   const categories = ['All', ...new Set(products.map(p => p.category).filter(Boolean))];
   const filteredProducts = selectedCategory === 'All' ? products : products.filter(p => p.category === selectedCategory);
