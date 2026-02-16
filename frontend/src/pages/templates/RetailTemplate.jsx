@@ -24,6 +24,7 @@ const RetailTemplate = ({ business, products }) => {
   const [filterCategory, setFilterCategory] = useState('All');
   const [sortBy, setSortBy] = useState('popular');
   const [orderData, setOrderData] = useState({ customer_name: '', customer_phone: '', customer_address: '', notes: '' });
+  const [deliveryInfo, setDeliveryInfo] = useState(null);
 
   const categories = ['All', ...new Set(products.map(p => p.category).filter(Boolean))];
   
