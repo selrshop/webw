@@ -856,6 +856,435 @@ async def get_reseller_stats(current_user: dict = Depends(get_current_user)):
         "active_businesses": active_businesses
     }
 
+# ============ Payment Gateway Routes ============
+
+import razorpay
+import hashlib
+import hmac
+import base64
+
+# Payment Transaction Model
+class PaymentTransaction(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    business_id: str
+    order_id: str
+    amount: float
+    currency: str = "INR"
+    gateway: str  # razorpay, stripe, payu, phonepe
+    gateway_order_id: Optional[str] = None
+    gateway_payment_id: Optional[str] = None
+    status: str = "pending"  # pending, success, failed
+    customer_name: str
+    customer_email: str
+    customer_phone: str
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class CreatePaymentRequest(BaseModel):
+    order_id: str
+    amount: float
+    customer_name: str
+    customer_email: str
+    customer_phone: str
+    customer_address: Optional[str] = None
+
+class PaymentVerifyRequest(BaseModel):
+    razorpay_order_id: Optional[str] = None
+    razorpay_payment_id: Optional[str] = None
+    razorpay_signature: Optional[str] = None
+    stripe_session_id: Optional[str] = None
+    payu_txnid: Optional[str] = None
+    phonepe_transaction_id: Optional[str] = None
+
+# Razorpay Payment
+@api_router.post("/public/businesses/{subdomain}/payments/razorpay/create")
+async def create_razorpay_payment(subdomain: str, request: CreatePaymentRequest):
+    """Create a Razorpay order for payment"""
+    business = await db.businesses.find_one({"subdomain": subdomain, "is_active": True}, {"_id": 0})
+    if not business:
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    if business.get('payment_gateway') != 'razorpay':
+        raise HTTPException(status_code=400, detail="Razorpay not configured for this business")
+    
+    if not business.get('razorpay_key_id') or not business.get('razorpay_key_secret'):
+        raise HTTPException(status_code=400, detail="Razorpay credentials not configured")
+    
+    try:
+        client = razorpay.Client(auth=(business['razorpay_key_id'], business['razorpay_key_secret']))
+        
+        # Create Razorpay order (amount in paise)
+        razorpay_order = client.order.create({
+            "amount": int(request.amount * 100),
+            "currency": "INR",
+            "receipt": request.order_id,
+            "payment_capture": 1
+        })
+        
+        # Store payment transaction
+        transaction = {
+            "id": str(uuid.uuid4()),
+            "business_id": business['id'],
+            "order_id": request.order_id,
+            "amount": request.amount,
+            "currency": "INR",
+            "gateway": "razorpay",
+            "gateway_order_id": razorpay_order['id'],
+            "status": "pending",
+            "customer_name": request.customer_name,
+            "customer_email": request.customer_email,
+            "customer_phone": request.customer_phone,
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc)
+        }
+        await db.payment_transactions.insert_one(transaction)
+        
+        return {
+            "order_id": razorpay_order['id'],
+            "amount": razorpay_order['amount'],
+            "currency": razorpay_order['currency'],
+            "key_id": business['razorpay_key_id'],
+            "business_name": business['name'],
+            "customer_name": request.customer_name,
+            "customer_email": request.customer_email,
+            "customer_phone": request.customer_phone
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create payment: {str(e)}")
+
+@api_router.post("/public/businesses/{subdomain}/payments/razorpay/verify")
+async def verify_razorpay_payment(subdomain: str, request: PaymentVerifyRequest):
+    """Verify Razorpay payment signature"""
+    business = await db.businesses.find_one({"subdomain": subdomain, "is_active": True}, {"_id": 0})
+    if not business:
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    if not request.razorpay_order_id or not request.razorpay_payment_id or not request.razorpay_signature:
+        raise HTTPException(status_code=400, detail="Missing payment details")
+    
+    try:
+        # Verify signature
+        msg = f"{request.razorpay_order_id}|{request.razorpay_payment_id}"
+        generated_signature = hmac.new(
+            business['razorpay_key_secret'].encode(),
+            msg.encode(),
+            hashlib.sha256
+        ).hexdigest()
+        
+        if generated_signature != request.razorpay_signature:
+            # Update transaction status to failed
+            await db.payment_transactions.update_one(
+                {"gateway_order_id": request.razorpay_order_id},
+                {"$set": {"status": "failed", "updated_at": datetime.now(timezone.utc)}}
+            )
+            raise HTTPException(status_code=400, detail="Payment verification failed")
+        
+        # Update transaction status to success
+        await db.payment_transactions.update_one(
+            {"gateway_order_id": request.razorpay_order_id},
+            {"$set": {
+                "status": "success",
+                "gateway_payment_id": request.razorpay_payment_id,
+                "updated_at": datetime.now(timezone.utc)
+            }}
+        )
+        
+        # Get transaction to update order
+        transaction = await db.payment_transactions.find_one({"gateway_order_id": request.razorpay_order_id}, {"_id": 0})
+        if transaction:
+            await db.orders.update_one(
+                {"id": transaction['order_id']},
+                {"$set": {"status": "paid", "payment_id": request.razorpay_payment_id}}
+            )
+        
+        return {"status": "success", "message": "Payment verified successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Verification failed: {str(e)}")
+
+# Stripe Payment using emergentintegrations
+@api_router.post("/public/businesses/{subdomain}/payments/stripe/create")
+async def create_stripe_payment(subdomain: str, request: CreatePaymentRequest):
+    """Create a Stripe checkout session"""
+    from fastapi import Request as FastAPIRequest
+    
+    business = await db.businesses.find_one({"subdomain": subdomain, "is_active": True}, {"_id": 0})
+    if not business:
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    if business.get('payment_gateway') != 'stripe':
+        raise HTTPException(status_code=400, detail="Stripe not configured for this business")
+    
+    try:
+        from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionRequest
+        
+        # Use Stripe test key from environment or business config
+        stripe_key = business.get('stripe_secret_key') or os.environ.get('STRIPE_API_KEY', 'sk_test_emergent')
+        
+        # Get host URL from environment
+        host_url = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001')
+        webhook_url = f"{host_url}/api/webhook/stripe"
+        
+        stripe_checkout = StripeCheckout(api_key=stripe_key, webhook_url=webhook_url)
+        
+        # Create checkout session
+        success_url = f"{host_url.replace('/api', '')}/site/{subdomain}/payment-success?session_id={{CHECKOUT_SESSION_ID}}"
+        cancel_url = f"{host_url.replace('/api', '')}/site/{subdomain}/payment-cancel"
+        
+        checkout_request = CheckoutSessionRequest(
+            amount=request.amount,
+            currency="inr",
+            success_url=success_url,
+            cancel_url=cancel_url,
+            metadata={
+                "order_id": request.order_id,
+                "business_id": business['id'],
+                "customer_email": request.customer_email
+            }
+        )
+        
+        session = await stripe_checkout.create_checkout_session(checkout_request)
+        
+        # Store payment transaction
+        transaction = {
+            "id": str(uuid.uuid4()),
+            "business_id": business['id'],
+            "order_id": request.order_id,
+            "amount": request.amount,
+            "currency": "INR",
+            "gateway": "stripe",
+            "gateway_order_id": session.session_id,
+            "status": "pending",
+            "customer_name": request.customer_name,
+            "customer_email": request.customer_email,
+            "customer_phone": request.customer_phone,
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc)
+        }
+        await db.payment_transactions.insert_one(transaction)
+        
+        return {
+            "checkout_url": session.url,
+            "session_id": session.session_id
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create Stripe session: {str(e)}")
+
+@api_router.get("/public/businesses/{subdomain}/payments/stripe/status/{session_id}")
+async def get_stripe_payment_status(subdomain: str, session_id: str):
+    """Check Stripe payment status"""
+    business = await db.businesses.find_one({"subdomain": subdomain, "is_active": True}, {"_id": 0})
+    if not business:
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    try:
+        from emergentintegrations.payments.stripe.checkout import StripeCheckout
+        
+        stripe_key = business.get('stripe_secret_key') or os.environ.get('STRIPE_API_KEY', 'sk_test_emergent')
+        host_url = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001')
+        
+        stripe_checkout = StripeCheckout(api_key=stripe_key, webhook_url=f"{host_url}/api/webhook/stripe")
+        status = await stripe_checkout.get_checkout_status(session_id)
+        
+        # Update transaction if paid
+        if status.payment_status == 'paid':
+            await db.payment_transactions.update_one(
+                {"gateway_order_id": session_id},
+                {"$set": {"status": "success", "updated_at": datetime.now(timezone.utc)}}
+            )
+            
+            # Update order status
+            transaction = await db.payment_transactions.find_one({"gateway_order_id": session_id}, {"_id": 0})
+            if transaction:
+                await db.orders.update_one(
+                    {"id": transaction['order_id']},
+                    {"$set": {"status": "paid"}}
+                )
+        
+        return {
+            "status": status.status,
+            "payment_status": status.payment_status,
+            "amount": status.amount_total,
+            "currency": status.currency
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get status: {str(e)}")
+
+# PayU Payment
+@api_router.post("/public/businesses/{subdomain}/payments/payu/create")
+async def create_payu_payment(subdomain: str, request: CreatePaymentRequest):
+    """Create PayU payment hash and form data"""
+    business = await db.businesses.find_one({"subdomain": subdomain, "is_active": True}, {"_id": 0})
+    if not business:
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    if business.get('payment_gateway') != 'payu':
+        raise HTTPException(status_code=400, detail="PayU not configured for this business")
+    
+    if not business.get('payu_merchant_key') or not business.get('payu_merchant_salt'):
+        raise HTTPException(status_code=400, detail="PayU credentials not configured")
+    
+    try:
+        txnid = str(uuid.uuid4())[:20]
+        host_url = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').replace('/api', '')
+        
+        # Generate hash
+        hash_string = f"{business['payu_merchant_key']}|{txnid}|{request.amount}|{request.order_id}|{request.customer_name}|{request.customer_email}|||||||||||{business['payu_merchant_salt']}"
+        hash_value = hashlib.sha512(hash_string.encode('utf-8')).hexdigest()
+        
+        # Store transaction
+        transaction = {
+            "id": str(uuid.uuid4()),
+            "business_id": business['id'],
+            "order_id": request.order_id,
+            "amount": request.amount,
+            "currency": "INR",
+            "gateway": "payu",
+            "gateway_order_id": txnid,
+            "status": "pending",
+            "customer_name": request.customer_name,
+            "customer_email": request.customer_email,
+            "customer_phone": request.customer_phone,
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc)
+        }
+        await db.payment_transactions.insert_one(transaction)
+        
+        return {
+            "payu_url": "https://secure.payu.in/_payment",  # Use test URL for sandbox
+            "key": business['payu_merchant_key'],
+            "txnid": txnid,
+            "amount": request.amount,
+            "productinfo": request.order_id,
+            "firstname": request.customer_name,
+            "email": request.customer_email,
+            "phone": request.customer_phone,
+            "surl": f"{host_url}/site/{subdomain}/payment-success",
+            "furl": f"{host_url}/site/{subdomain}/payment-failed",
+            "hash": hash_value
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create PayU payment: {str(e)}")
+
+# PhonePe Payment
+@api_router.post("/public/businesses/{subdomain}/payments/phonepe/create")
+async def create_phonepe_payment(subdomain: str, request: CreatePaymentRequest):
+    """Create PhonePe payment request"""
+    business = await db.businesses.find_one({"subdomain": subdomain, "is_active": True}, {"_id": 0})
+    if not business:
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    if business.get('payment_gateway') != 'phonepe':
+        raise HTTPException(status_code=400, detail="PhonePe not configured for this business")
+    
+    if not business.get('phonepe_merchant_id') or not business.get('phonepe_salt_key'):
+        raise HTTPException(status_code=400, detail="PhonePe credentials not configured")
+    
+    try:
+        import json
+        
+        merchant_transaction_id = str(uuid.uuid4())[:35]
+        host_url = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').replace('/api', '')
+        
+        # Create payload
+        payload = {
+            "merchantId": business['phonepe_merchant_id'],
+            "merchantTransactionId": merchant_transaction_id,
+            "merchantUserId": request.customer_email,
+            "amount": int(request.amount * 100),  # Amount in paise
+            "redirectUrl": f"{host_url}/site/{subdomain}/payment-success?txnId={merchant_transaction_id}",
+            "redirectMode": "REDIRECT",
+            "callbackUrl": f"{host_url}/api/webhook/phonepe/{subdomain}",
+            "paymentInstrument": {"type": "PAY_PAGE"}
+        }
+        
+        payload_base64 = base64.b64encode(json.dumps(payload).encode()).decode()
+        
+        # Generate checksum
+        salt_index = business.get('phonepe_salt_index', 1)
+        string_to_hash = payload_base64 + "/pg/v1/pay" + business['phonepe_salt_key']
+        checksum = hashlib.sha256(string_to_hash.encode()).hexdigest() + "###" + str(salt_index)
+        
+        # Store transaction
+        transaction = {
+            "id": str(uuid.uuid4()),
+            "business_id": business['id'],
+            "order_id": request.order_id,
+            "amount": request.amount,
+            "currency": "INR",
+            "gateway": "phonepe",
+            "gateway_order_id": merchant_transaction_id,
+            "status": "pending",
+            "customer_name": request.customer_name,
+            "customer_email": request.customer_email,
+            "customer_phone": request.customer_phone,
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc)
+        }
+        await db.payment_transactions.insert_one(transaction)
+        
+        return {
+            "phonepe_url": "https://api-preprod.phonepe.com/apis/pg-sandbox/pg/v1/pay",  # Sandbox URL
+            "payload": payload_base64,
+            "checksum": checksum,
+            "merchant_transaction_id": merchant_transaction_id
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create PhonePe payment: {str(e)}")
+
+# Get payment gateway info for a business (public)
+@api_router.get("/public/businesses/{subdomain}/payment-info")
+async def get_business_payment_info(subdomain: str):
+    """Get payment gateway info for customer checkout"""
+    business = await db.businesses.find_one({"subdomain": subdomain, "is_active": True}, {"_id": 0})
+    if not business:
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    gateway = business.get('payment_gateway')
+    
+    result = {
+        "payment_enabled": gateway is not None,
+        "gateway": gateway,
+        "business_name": business['name']
+    }
+    
+    # Include public key for Razorpay (needed for frontend)
+    if gateway == 'razorpay' and business.get('razorpay_key_id'):
+        result['razorpay_key_id'] = business['razorpay_key_id']
+    
+    # Include publishable key for Stripe
+    if gateway == 'stripe':
+        result['stripe_publishable_key'] = business.get('stripe_publishable_key')
+    
+    return result
+
+# Get payment transaction status
+@api_router.get("/public/businesses/{subdomain}/payments/{transaction_id}/status")
+async def get_payment_transaction_status(subdomain: str, transaction_id: str):
+    """Get payment transaction status"""
+    business = await db.businesses.find_one({"subdomain": subdomain, "is_active": True}, {"_id": 0})
+    if not business:
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    transaction = await db.payment_transactions.find_one({
+        "business_id": business['id'],
+        "$or": [
+            {"id": transaction_id},
+            {"gateway_order_id": transaction_id}
+        ]
+    }, {"_id": 0})
+    
+    if not transaction:
+        raise HTTPException(status_code=404, detail="Transaction not found")
+    
+    return {
+        "status": transaction['status'],
+        "amount": transaction['amount'],
+        "gateway": transaction['gateway'],
+        "order_id": transaction['order_id']
+    }
+
 # Include the router in the main app
 app.include_router(api_router)
 
