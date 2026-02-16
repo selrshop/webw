@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner';
 import axios from 'axios';
 import { openWhatsApp } from '@/utils/whatsapp';
+import DeliveryCalculator from '@/components/DeliveryCalculator';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API_BASE = `${BACKEND_URL}/api`;
