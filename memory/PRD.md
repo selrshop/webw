@@ -62,6 +62,12 @@ Build a SaaS platform for businesses in India to create websites focused on What
 - [x] Frontend fully functional
 - [x] **P2: Dynamic Product Attributes UI** - Veg/non-veg toggle for food/grocery, sizes/colors selection for clothing
 - [x] **P2: Business Settings UI** - Delivery charges, free delivery threshold, tax percentage, color scheme (8 presets + custom pickers)
+- [x] **Location-Based Delivery** - Auto-detect customer location, calculate delivery charges based on distance
+  - Business owners can set their location (lat/long) with "Use Current Location" button
+  - Configure: Free delivery radius, charge beyond radius, max delivery distance
+  - Delivery Rules Preview shows calculated pricing
+  - DeliveryCalculator component in customer templates (Restaurant, Retail, Universal)
+  - Backend API: /api/public/businesses/{subdomain}/calculate-delivery with Haversine formula
 
 ## Upcoming Tasks (P1)
 - [ ] Create SalonTemplate.jsx (priority template)
