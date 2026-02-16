@@ -254,6 +254,17 @@ class Business(BaseModel):
     free_delivery_radius_km: float = 5.0
     delivery_charge_beyond_radius: float = 0.0
     max_delivery_radius_km: Optional[float] = None
+    # Payment Gateway Configuration
+    payment_gateway: Optional[str] = None  # razorpay, stripe, payu, phonepe
+    razorpay_key_id: Optional[str] = None
+    razorpay_key_secret: Optional[str] = None
+    stripe_publishable_key: Optional[str] = None
+    stripe_secret_key: Optional[str] = None
+    payu_merchant_key: Optional[str] = None
+    payu_merchant_salt: Optional[str] = None
+    phonepe_merchant_id: Optional[str] = None
+    phonepe_salt_key: Optional[str] = None
+    phonepe_salt_index: Optional[int] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     is_active: bool = True
 
