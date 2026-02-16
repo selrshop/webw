@@ -632,14 +632,14 @@ const BusinessSettings = () => {
             <div className="mb-6">
               <Label>Select Payment Gateway</Label>
               <Select 
-                value={business.payment_gateway || ''} 
-                onValueChange={(value) => setBusiness({...business, payment_gateway: value || null})}
+                value={business.payment_gateway || 'none'} 
+                onValueChange={(value) => setBusiness({...business, payment_gateway: value === 'none' ? null : value})}
               >
                 <SelectTrigger className="mt-2" data-testid="payment-gateway-select">
                   <SelectValue placeholder="Select a payment gateway" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">None (WhatsApp only)</SelectItem>
+                  <SelectItem value="none">None (WhatsApp only)</SelectItem>
                   {PAYMENT_GATEWAYS.map(gw => (
                     <SelectItem key={gw.value} value={gw.value}>
                       <span className="flex items-center gap-2">
