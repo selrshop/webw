@@ -326,6 +326,149 @@ const BusinessSettings = () => {
             </div>
           </div>
 
+          {/* Location-Based Delivery */}
+          <div className="bg-white rounded-2xl shadow-sm border border-border/50 p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <MapPin className="w-5 h-5 text-primary" />
+              <h2 className="text-xl font-heading font-semibold">Location-Based Delivery</h2>
+            </div>
+            <p className="text-sm text-muted-foreground mb-4">
+              Set your business location to auto-calculate delivery charges based on customer distance
+            </p>
+            
+            <div className="space-y-4">
+              {/* Business Location */}
+              <div className="bg-gray-50 rounded-lg p-4">
+                <Label className="text-sm font-medium mb-3 block">Business Location</Label>
+                <div className="grid md:grid-cols-2 gap-4 mb-3">
+                  <div>
+                    <Label htmlFor="latitude" className="text-xs text-muted-foreground">Latitude</Label>
+                    <Input
+                      id="latitude"
+                      data-testid="business-latitude-input"
+                      type="number"
+                      step="0.000001"
+                      placeholder="e.g., 19.076090"
+                      value={business.business_latitude || ''}
+                      onChange={(e) => setBusiness({...business, business_latitude: e.target.value})}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="longitude" className="text-xs text-muted-foreground">Longitude</Label>
+                    <Input
+                      id="longitude"
+                      data-testid="business-longitude-input"
+                      type="number"
+                      step="0.000001"
+                      placeholder="e.g., 72.877426"
+                      value={business.business_longitude || ''}
+                      onChange={(e) => setBusiness({...business, business_longitude: e.target.value})}
+                      className="mt-1"
+                    />
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={detectCurrentLocation}
+                    disabled={detectingLocation}
+                    className="flex items-center gap-2"
+                  >
+                    {detectingLocation ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Navigation className="w-4 h-4" />
+                    )}
+                    {detectingLocation ? 'Detecting...' : 'Use Current Location'}
+                  </Button>
+                  {business.business_latitude && business.business_longitude && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={openInGoogleMaps}
+                      className="flex items-center gap-2"
+                    >
+                      <MapPin className="w-4 h-4" />
+                      View on Map
+                    </Button>
+                  )}
+                </div>
+                {business.business_latitude && business.business_longitude && (
+                  <p className="text-xs text-green-600 mt-2">
+                    ✓ Location set: {business.business_latitude}, {business.business_longitude}
+                  </p>
+                )}
+              </div>
+
+              {/* Delivery Radius Settings */}
+              <div className="grid md:grid-cols-3 gap-4">
+                <div>
+                  <Label htmlFor="freeRadius">Free Delivery Radius (km)</Label>
+                  <Input
+                    id="freeRadius"
+                    data-testid="free-radius-input"
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    placeholder="5"
+                    value={business.free_delivery_radius_km || ''}
+                    onChange={(e) => setBusiness({...business, free_delivery_radius_km: e.target.value})}
+                    className="mt-2"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">Free delivery within this radius</p>
+                </div>
+                <div>
+                  <Label htmlFor="chargesBeyond">Charge Beyond Radius (₹)</Label>
+                  <Input
+                    id="chargesBeyond"
+                    data-testid="charge-beyond-input"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    placeholder="50"
+                    value={business.delivery_charge_beyond_radius || ''}
+                    onChange={(e) => setBusiness({...business, delivery_charge_beyond_radius: e.target.value})}
+                    className="mt-2"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">Delivery charge if beyond free radius</p>
+                </div>
+                <div>
+                  <Label htmlFor="maxRadius">Max Delivery Distance (km)</Label>
+                  <Input
+                    id="maxRadius"
+                    data-testid="max-radius-input"
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    placeholder="Optional"
+                    value={business.max_delivery_radius_km || ''}
+                    onChange={(e) => setBusiness({...business, max_delivery_radius_km: e.target.value})}
+                    className="mt-2"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">Leave empty for unlimited</p>
+                </div>
+              </div>
+
+              {/* Preview */}
+              {business.business_latitude && business.business_longitude && (
+                <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
+                  <p className="text-sm font-medium text-blue-900 mb-2">Delivery Rules Preview</p>
+                  <ul className="text-sm text-blue-800 space-y-1">
+                    <li>• Free delivery within <strong>{business.free_delivery_radius_km || 5} km</strong></li>
+                    <li>• ₹{business.delivery_charge_beyond_radius || 0} charge beyond {business.free_delivery_radius_km || 5} km</li>
+                    {business.max_delivery_radius_km && (
+                      <li>• No delivery beyond <strong>{business.max_delivery_radius_km} km</strong></li>
+                    )}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* Taxes */}
           <div className="bg-white rounded-2xl shadow-sm border border-border/50 p-6">
             <div className="flex items-center gap-2 mb-4">
