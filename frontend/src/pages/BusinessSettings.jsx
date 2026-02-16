@@ -25,6 +25,7 @@ const BusinessSettings = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [business, setBusiness] = useState(null);
+  const [detectingLocation, setDetectingLocation] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
